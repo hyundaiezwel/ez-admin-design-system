@@ -9,6 +9,7 @@ import { computed, ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { tabs, close } from './tabs'
 import AppIcon from './AppIcon.vue'
+import { chromeScheme } from './prefs'
 
 const router = useRouter()
 const scroller = ref<HTMLElement | null>(null)
@@ -26,7 +27,7 @@ const active = computed(() => tabs.active)
 </script>
 
 <template>
-  <div class="tb">
+  <div class="tb" :data-scheme="chromeScheme()">
     <button v-if="overflow" class="tb__nav" type="button" aria-label="이전 탭 보기" @click="move(-1)">
       <AppIcon name="chevron" :size="14" style="transform: rotate(90deg)" />
     </button>

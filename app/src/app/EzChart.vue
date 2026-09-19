@@ -55,10 +55,20 @@ const merged = computed(() => {
   const line = token('--ez-border-subtle')
   const surface = token('--ez-surface-default')
 
-  // **범주형 팔레트를 쓴다.** 의미색(success 초록·danger 빨강)을 범주에 쓰면
-  // "좋음/나쁨"으로 읽힌다 — 첫 대시보드가 그랬다. `--ez-chart-*`는 채도를 낮추고
-  // 휘도를 교차시킨 계열이고, 라이트·다크 양쪽에서 3:1을 넘는다(@ezwel/ui v1.2.0).
-  const palette = [1, 2, 3, 4, 5, 6].map((i) => token(`--ez-chart-${i}`))
+  // **기본은 두 색이다.** 계열이 둘이면 브랜드 1색 + 중립색만 쓴다 —
+  // 이번 기간 vs 지난 기간 같은 비교 쌍이 업무 차트의 대부분이고, 거기에 여섯 색을
+  // 다 꺼내면 알록달록해진다. 셋 이상일 때만 범주 팔레트를 편다.
+  //
+  // 의미색(success 초록·danger 빨강)은 범주에 쓰지 않는다 — "좋음/나쁨"으로 읽힌다.
+  const seriesCount = Array.isArray(props.option.series) ? props.option.series.length : 1
+  const pieCount =
+    props.option.series?.[0]?.type === 'pie' ? (props.option.series[0].data?.length ?? 0) : 0
+  const count = Math.max(seriesCount, pieCount)
+
+  const palette =
+    count <= 2
+      ? [token('--ez-chart-1'), token('--ez-chart-muted')]
+      : [1, 2, 3, 4, 5, 6].map((i) => token(`--ez-chart-${i}`))
 
   const axis = {
     axisLine: { lineStyle: { color: line } },

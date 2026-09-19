@@ -2,43 +2,20 @@
 /**
  * 상단 고정 헤더(GNB).
  *
- * 테마·글자 크기 전환을 여기 둔 이유 — 디자인 시스템이 제공하는 기능인데 화면 어딘가
- * 깊숙이 숨기면 아무도 안 쓴다. 실제 제품에서는 내 정보 메뉴로 들어간다.
+ * `data-scheme`으로 **이 조각만** 다크가 된다 — 본문은 밝은 채로 둔다.
+ * 표시 설정은 화면이 아니라 셸의 성질이라 `prefs`가 들고 있다.
  */
-import { ref } from 'vue'
 import AppIcon from './AppIcon.vue'
+import { prefs, chromeScheme } from './prefs'
 
 defineProps<{ collapsed: boolean }>()
 const emit = defineEmits<{ toggleLnb: [] }>()
 
-const theme = ref<'light' | 'dark'>('light')
-const contrast = ref(false)
-const scale = ref(1)
-
-function apply() {
-  const root = document.documentElement
-  root.dataset.theme = theme.value
-  if (contrast.value) root.dataset.contrast = 'high'
-  else delete root.dataset.contrast
-  root.dataset.fontScale = String(scale.value)
-}
-
-function toggleTheme() {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-  apply()
-}
-function toggleContrast() {
-  contrast.value = !contrast.value
-  apply()
-}
-function bumpScale() {
-  scale.value = scale.value >= 5 ? 1 : scale.value + 1
-  apply()
-}
+const bumpScale = () => (prefs.fontScale = prefs.fontScale >= 5 ? 1 : prefs.fontScale + 1)
 </script>
 
 <template>
-  <header class="hd">
+  <header class="hd" :data-scheme="chromeScheme()">
     <button class="hd__icon" type="button" :aria-label="collapsed ? '메뉴 펼치기' : '메뉴 접기'" @click="emit('toggleLnb')">
       <AppIcon name="menu" />
     </button>
@@ -54,21 +31,36 @@ function bumpScale() {
     </div>
 
     <div class="hd__actions">
-      <button class="hd__icon" type="button" :aria-label="`색상 모드 전환 (현재 ${theme === 'light' ? '라이트' : '다크'})`" @click="toggleTheme">
-        <AppIcon :name="theme === 'light' ? 'moon' : 'sun'" />
+      <button
+        class="hd__icon"
+        :class="{ 'hd__icon--on': prefs.darkChrome }"
+        type="button"
+        :aria-pressed="prefs.darkChrome"
+        aria-label="셸만 어둡게"
+        @click="prefs.darkChrome = !prefs.darkChrome"
+      >
+        <span class="hd__badge-text">셸</span>
       </button>
       <button
         class="hd__icon"
-        :class="{ 'hd__icon--on': contrast }"
         type="button"
-        :aria-pressed="contrast"
+        :aria-label="`색상 모드 전환 (현재 ${prefs.theme === 'light' ? '라이트' : '다크'})`"
+        @click="prefs.theme = prefs.theme === 'light' ? 'dark' : 'light'"
+      >
+        <AppIcon :name="prefs.theme === 'light' ? 'moon' : 'sun'" />
+      </button>
+      <button
+        class="hd__icon"
+        :class="{ 'hd__icon--on': prefs.contrast }"
+        type="button"
+        :aria-pressed="prefs.contrast"
         aria-label="선명한 화면 모드"
-        @click="toggleContrast"
+        @click="prefs.contrast = !prefs.contrast"
       >
         <span class="hd__badge-text">AA</span>
       </button>
-      <button class="hd__icon" type="button" :aria-label="`글자 크기 ${scale}단계, 누르면 다음 단계`" @click="bumpScale">
-        <span class="hd__badge-text">가{{ scale }}</span>
+      <button class="hd__icon" type="button" :aria-label="`글자 크기 ${prefs.fontScale}단계, 누르면 다음 단계`" @click="bumpScale">
+        <span class="hd__badge-text">가{{ prefs.fontScale }}</span>
       </button>
 
       <!-- 같은 화면을 WebSquare 구조로 본다. 구조 비교가 목적이라 셸만 갈린다 -->

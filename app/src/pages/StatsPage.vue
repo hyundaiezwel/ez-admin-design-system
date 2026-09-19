@@ -81,7 +81,7 @@ const table = computed(() =>
 </script>
 
 <template>
-  <div class="pg">
+  <div class="pg" data-density="comfortable">
     <header class="pg__head">
       <div>
         <h1 class="pg__title">통계</h1>
@@ -104,12 +104,12 @@ const table = computed(() =>
     <div class="grid2">
       <section class="card" style="grid-column: span 2">
         <h2 class="card__title">채널별 주문 추이 (누적 막대)</h2>
-        <EzChart :option="stacked" :decal="decal" height="280px" />
+        <EzChart :option="stacked" :decal="decal" height="300px" />
       </section>
 
       <section class="card" style="grid-column: span 2">
         <h2 class="card__title">매출·건수 (콤보)</h2>
-        <EzChart :option="combo" :decal="decal" height="280px" />
+        <EzChart :option="combo" :decal="decal" height="300px" />
       </section>
 
       <section class="card">
@@ -157,7 +157,7 @@ const table = computed(() =>
 .decal__label span { color: var(--ez-text-muted); }
 
 .st { width: 100%; border-collapse: collapse; font-size: var(--ez-font-size-xs); }
-.st th, .st td { padding: var(--ez-space-2) var(--ez-space-3); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
+.st th, .st td { padding: var(--ez-space-3) var(--ez-space-3); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
 .st thead th { color: var(--ez-text-muted); font-weight: var(--ez-font-weight-medium); }
 .st .num { text-align: right; font-variant-numeric: tabular-nums; }
 .st tfoot th, .st tfoot td { border-top: 2px solid var(--ez-border-default); border-bottom: none; font-weight: var(--ez-font-weight-bold); color: var(--ez-text-strong); }

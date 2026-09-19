@@ -11,6 +11,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { MENU, type MenuItem } from './menu'
 import AppIcon from './AppIcon.vue'
+import { chromeScheme } from './prefs'
 
 const props = defineProps<{ collapsed: boolean }>()
 const route = useRoute()
@@ -42,7 +43,7 @@ const width = computed(() => (props.collapsed ? 'var(--lnb-w-collapsed)' : 'var(
 </script>
 
 <template>
-  <nav class="lnb" :style="{ width }" aria-label="주 메뉴">
+  <nav class="lnb" :style="{ width }" :data-scheme="chromeScheme()" aria-label="주 메뉴">
     <ul class="lnb__list">
       <li v-for="item in MENU" :key="item.id" class="lnb__group" @mouseleave="flyout = null">
         <!-- 잎 노드는 링크, 가지는 버튼. 역할이 다르면 태그도 달라야 키보드 동작이 맞는다 -->

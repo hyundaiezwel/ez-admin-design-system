@@ -65,7 +65,8 @@ const recent = computed(() => inquiries.slice(0, 6))
 </script>
 
 <template>
-  <div class="pg">
+  <!-- 여유 밀도 — 위젯 몇 개가 전부인 화면이다. 목록·폼에는 걸지 않는다 -->
+  <div class="pg" data-density="comfortable">
     <header class="pg__head">
       <div>
         <h1 class="pg__title">대시보드</h1>
@@ -89,24 +90,26 @@ const recent = computed(() => inquiries.slice(0, 6))
       </div>
     </div>
 
-    <div class="grid2">
-      <section class="card" style="grid-column: span 2">
+    <!-- 폭을 2:1 로 나눠 무게를 준다. 다 같은 폭이면 무엇이 중요한지 안 보인다 -->
+    <div class="grid21">
+      <section class="card">
         <h2 class="card__title">주문·취소 추이</h2>
-        <EzChart :option="trend" height="240px" />
+        <EzChart :option="trend" height="280px" />
       </section>
 
       <section class="card">
         <h2 class="card__title">문의 채널 구성</h2>
-        <EzChart :option="byChannel" height="240px" />
-      </section>
-
-      <section class="card">
-        <h2 class="card__title">문의 분류별 건수</h2>
-        <EzChart :option="byCategory" height="240px" :decal="false" />
+        <EzChart :option="byChannel" height="280px" />
       </section>
     </div>
 
-    <section class="card">
+    <div class="grid12">
+      <section class="card">
+        <h2 class="card__title">문의 분류별 건수</h2>
+        <EzChart :option="byCategory" height="260px" :decal="false" />
+      </section>
+
+      <section class="card">
       <div class="card__head">
         <h2 class="card__title" style="margin: 0">최근 문의</h2>
         <Button label="전체 보기" text size="small" @click="router.push('/cs/inquiries')" />
@@ -125,35 +128,41 @@ const recent = computed(() => inquiries.slice(0, 6))
           </tr>
         </tbody>
       </table>
-    </section>
+      </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .kpi {
-  padding: var(--ez-space-4);
+  padding: var(--ez-card-padding);
   background: var(--ez-surface-default);
-  border: 1px solid var(--ez-border-default);
-  border-radius: var(--ez-radius-lg);
+  border: var(--ez-card-border-width) solid var(--ez-border-default);
+  border-radius: var(--ez-card-radius);
+  box-shadow: var(--ez-card-shadow);
 }
-.kpi__label { margin: 0; font-size: var(--ez-font-size-xs); color: var(--ez-text-muted); }
+
+/* 라벨을 낮추고 값을 올린다. 위계가 크기 대비만으로 선다 */
+.kpi__label { margin: 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
 .kpi__value {
-  margin: var(--ez-space-2) 0 0;
-  font-size: var(--ez-font-size-2xl);
+  margin: var(--ez-space-3) 0 0;
+  font-size: var(--ez-font-size-3xl);
   font-weight: var(--ez-font-weight-bold);
+  line-height: var(--ez-line-height-tight);
   color: var(--ez-text-strong);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 .kpi__value--danger { color: var(--ez-text-danger); }
 .kpi__unit { margin-left: 3px; font-size: var(--ez-font-size-xs); font-weight: var(--ez-font-weight-regular); color: var(--ez-text-muted); }
-.kpi__delta { margin: var(--ez-space-1) 0 0; font-size: var(--ez-font-size-2xs); }
+.kpi__delta { margin: var(--ez-space-2) 0 0; font-size: var(--ez-font-size-2xs); }
 .kpi__delta--up { color: var(--ez-text-success); }
 .kpi__delta--down { color: var(--ez-text-danger); }
 
 .card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--ez-space-3); }
 
 .mini { width: 100%; border-collapse: collapse; font-size: var(--ez-font-size-xs); table-layout: fixed; }
-.mini th, .mini td { padding: var(--ez-space-2) var(--ez-space-2); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
+.mini th, .mini td { padding: var(--ez-space-3) var(--ez-space-2); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
 .mini th { color: var(--ez-text-muted); font-weight: var(--ez-font-weight-medium); }
 .mini tbody tr:last-child td { border-bottom: none; }
 .mini__id { width: 110px; font-variant-numeric: tabular-nums; }

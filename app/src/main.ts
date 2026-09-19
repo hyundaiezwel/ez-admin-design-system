@@ -4,6 +4,9 @@ import App from './App.vue'
 import { router } from './router'
 import { EzPreset } from './theme'
 import './styles/main.css'
+import { applyPrefs } from './app/prefs'
+
+applyPrefs()
 
 createApp(App)
   .use(router)
