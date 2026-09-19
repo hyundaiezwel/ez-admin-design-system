@@ -13,7 +13,7 @@
 
 본 앱은 아직 없다.
 
-**라이브 데모(PrimeVue 판 문의 답변 관리): https://hyundaiezwel.github.io/ez-admin-design-system/**
+**라이브: https://hyundaiezwel.github.io/ez-admin-design-system/**
 
 디자인 시스템 문서 사이트: https://hyundaiezwel.github.io/ez-design-system/
 
@@ -22,22 +22,40 @@ Nuxt UI 판은 배포하지 않는다 — 선정 근거 기록이고 팔레트 �
 (팔레트 사본이 v1.0.0에 멈춰 있다).
 
 ```
-fixtures/        시드 고정 목업 데이터 (두 스파이크가 공유)
+app/             어드민 목업 앱 (셸 + 화면 9개)
+  src/app/       헤더 · LNB · 탭 바 · 차트 래퍼
+  src/layouts/   AppShell · AuthLayout
+  src/pages/     화면
+fixtures/        시드 고정 목업 데이터
 shared/grid/     Tabulator 래퍼 + PoC에서 가져온 pasteGuard · rowSelect
 shared/measure.ts  대비·밀도 계측 (렌더된 픽셀에서 잰다)
-spike/nuxt-ui/   Nuxt UI 4.11 판
-spike/primevue/  PrimeVue 4.5.5 판
+spike/           라이브러리 선정 스파이크 (기록용, 배포 안 함)
 ```
+
+## 화면
+
+| 경로 | 화면 | 여기서 확인되는 것 |
+|---|---|---|
+| `/login` | 로그인 | 폼 검증 · 오류 표시 · 셸 없는 레이아웃 |
+| `/` | 대시보드 | KPI · 차트 3종 · 드릴다운 |
+| `/cs/inquiries` | 문의 답변 관리 | 편집 그리드 · 범위 복붙 · 답변 패널 · IME 자동완성 |
+| `/cs/members` | 회원 관리 | 조회 전용 그리드 · 상세 패널 |
+| `/sales/promotions` | 프로모션 등록·관리 | 기간 입력 · 대상 조건 · **상태가 입력을 잠근다** |
+| `/sales/orders` | 주문·정산 관리 | 30만 행 가상 렌더 · 합계 · 컬럼 고정 |
+| `/sales/products` | 상품 등록 | 입력 타입 풀세트 · 미저장 이탈 확인 |
+| `/stats` | 통계 | 차트 전 종류 · `aria.decal` 토글 |
+| `/system/catalog` | 컴포넌트 카탈로그 | 토큰·테마·고대비·글자확대 전환 |
+| `/system/codes` | 공통코드 | 마스터–디테일 2단 · 뱃지 색의 단일 원천 |
 
 ## 돌려보기
 
 ```bash
 npm install
-npm run spike:prime   # http://127.0.0.1:5320
-npm run spike:nuxt    # http://127.0.0.1:5310
+npm run dev     # http://127.0.0.1:5300
 ```
 
-브라우저 콘솔에서 `window.__measure()` / `window.__density()`.
+스파이크를 다시 돌리려면 `npm run spike:prime` / `npm run spike:nuxt`
+(브라우저 콘솔에서 `window.__measure()` / `window.__density()`).
 
 ## 측정 요약
 

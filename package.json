@@ -2,8 +2,14 @@
   "name": "ez-admin-design-system",
   "private": true,
   "type": "module",
-  "workspaces": ["spike/*"],
+  "workspaces": [
+    "app",
+    "spike/*"
+  ],
   "scripts": {
+    "dev": "npm run dev -w @app/admin",
+    "build": "npm run build -w @app/admin",
+    "typecheck": "npm run typecheck -w @app/admin",
     "spike:nuxt": "npm run dev -w @spike/nuxt-ui",
     "spike:prime": "npm run dev -w @spike/primevue"
   }

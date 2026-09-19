@@ -31,6 +31,8 @@ const props = withDefaults(
 const emit = defineEmits<{
   selectionChange: [count: number]
   pasteReport: [report: { ok: boolean; summary: string }]
+  /** 행 클릭. 조회 전용 목록에서 상세 패널을 여는 데 쓴다 */
+  rowClick: [row: any]
 }>()
 
 const el = ref<HTMLElement | null>(null)
@@ -82,6 +84,11 @@ onMounted(() => {
       : {}),
   })
 
+  // 체크박스 컬럼 클릭은 '선택'이지 '행 열기'가 아니다 — 거터를 눌렀을 때 상세가 뜨면 안 된다
+  table.value.on('rowClick', (e: MouseEvent, row: any) => {
+    if ((e.target as HTMLElement | null)?.closest('.sel-col')) return
+    emit('rowClick', row.getData())
+  })
 })
 
 watch(

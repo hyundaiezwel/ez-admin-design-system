@@ -1,10 +1,8 @@
 name: Pages
 
-# 확정된 PrimeVue 판 스파이크를 라이브 데모로 배포한다.
+# 어드민 목업 앱(`app/`)을 배포한다.
 #
-# Nuxt UI 판은 **배포하지 않는다.** 선정 근거 기록으로 저장소에만 남기고 더 갱신하지 않기로
-# 했는데(팔레트 사본이 @ezwel/ui v1.0.0에 멈춰 있다), 그걸 나란히 띄우면 어느 쪽이 현재
-# 기준인지 헷갈린다.
+# 스파이크는 배포하지 않는다 — 라이브러리 선정 근거 기록이라 저장소에만 남긴다.
 #
 # 저장소를 public으로 전환하고 Pages를 켰다(2026-09-19). 조직 플랜이 free라
 # private으로 되돌리면 Pages도 함께 꺼진다.
@@ -43,14 +41,15 @@ jobs:
           git config --global url."https://x-access-token:${EZ_UI_TOKEN}@github.com/".insteadOf "https://github.com/"
 
       - run: npm ci
-      - run: npm run build -w @spike/primevue
+      - run: npm run typecheck -w @app/admin
+      - run: npm run build -w @app/admin
         env:
           PAGES_BASE: /ez-admin-design-system/
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: spike/primevue/dist
+          path: app/dist
 
   deploy:
     needs: build
