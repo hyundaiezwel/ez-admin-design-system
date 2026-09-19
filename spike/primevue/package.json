@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": { "dev": "vite", "build": "vite build" },
   "dependencies": {
-    "@ezwel/ui": "github:HyundaiEzwel-AI-Dev-Lab/ez-design-system#v1.0.0",
+    "@ezwel/ui": "github:hyundaiezwel/ez-design-system#v1.1.0",
     "@primevue/themes": "^4.5.4",
     "primevue": "^4.5.5",
     "tabulator-tables": "^6.5.3",
