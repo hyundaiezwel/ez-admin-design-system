@@ -13,9 +13,12 @@
 
 본 앱은 아직 없다.
 
-저장소는 **private**이다. 조직 free 플랜에서는 private Pages가 안 되므로 라이브 데모는
-띄우지 않는다 — `.github/workflows/pages.yml`은 수동 실행만 남겨 뒀다.
-디자인 시스템 문서 사이트는 공개돼 있다: https://hyundaiezwel.github.io/ez-design-system/ `spike/nuxt-ui`는 선정 근거 기록으로 남겨 두되 더 갱신하지 않는다
+**라이브 데모(PrimeVue 판 문의 답변 관리): https://hyundaiezwel.github.io/ez-admin-design-system/**
+
+디자인 시스템 문서 사이트: https://hyundaiezwel.github.io/ez-design-system/
+
+Nuxt UI 판은 배포하지 않는다 — 선정 근거 기록이고 팔레트 사본이 `@ezwel/ui` v1.0.0에
+멈춰 있어 나란히 띄우면 어느 쪽이 현재 기준인지 헷갈린다. `spike/nuxt-ui`는 선정 근거 기록으로 남겨 두되 더 갱신하지 않는다
 (팔레트 사본이 v1.0.0에 멈춰 있다).
 
 ```

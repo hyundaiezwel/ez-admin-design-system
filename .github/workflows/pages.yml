@@ -6,13 +6,12 @@ name: Pages
 # 했는데(팔레트 사본이 @ezwel/ui v1.0.0에 멈춰 있다), 그걸 나란히 띄우면 어느 쪽이 현재
 # 기준인지 헷갈린다.
 #
-# 조직 플랜이 free라 **저장소가 public일 때만 동작한다**(private Pages는 Enterprise Cloud 전용).
-# 켜는 법: Settings > Pages > Source = "GitHub Actions"
+# 저장소를 public으로 전환하고 Pages를 켰다(2026-09-19). 조직 플랜이 free라
+# private으로 되돌리면 Pages도 함께 꺼진다.
 
-# 이 저장소는 private을 유지하기로 했다(2026-09-19). free 플랜에서 private Pages는
-# 안 되므로 push마다 돌리면 deploy 잡이 매번 실패해 빨간 X만 쌓인다.
-# **수동 실행만** 남긴다 — 공개로 바꾸는 날 push 트리거를 되살리면 된다.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
