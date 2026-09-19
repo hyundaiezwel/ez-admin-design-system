@@ -1,0 +1,175 @@
+@import "tailwindcss";
+/* ===========================================================================
+ * Tailwind 색 레지스트리 — 우리 팔레트를 **빌드 타임에 복제**한다.
+ * ---------------------------------------------------------------------------
+ * `--ui-color-*` CSS 변수만 덮어서는 부족하다는 것이 실측으로 확인됐다.
+ * Nuxt UI의 뱃지·알림은 `bg-info/10` 같은 Tailwind 유틸리티로 색을 내고,
+ * 그 유틸리티는 CSS 변수가 아니라 `@theme` 레지스트리를 본다 — 덮기 전에는
+ * 전부 Tailwind 기본값(oklch)이 나왔다.
+ *
+ * 즉 Nuxt UI를 쓰면 팔레트가 두 곳에 산다. 정본은 `@ezwel/ui`의 tokens.css이고
+ * 아래는 사본이다. 바뀌면 같이 갱신해야 한다 — 이 중복이 도입 비용의 일부다.
+ * ========================================================================= */
+@theme {
+  --color-ezteal-50: #f0f9f8;
+  --color-ezteal-100: #dbf4f0;
+  --color-ezteal-200: #94e9de;
+  --color-ezteal-300: #16cfb5;
+  --color-ezteal-400: #009782;
+  --color-ezteal-500: #038674;
+  --color-ezteal-600: #067465;
+  --color-ezteal-700: #086558;
+  --color-ezteal-800: #084b42;
+  --color-ezteal-900: #062c27;
+  --color-ezteal-950: #041916;
+  --color-ezinfo-50: #f5f7fa;
+  --color-ezinfo-100: #eaeff7;
+  --color-ezinfo-200: #cedbf0;
+  --color-ezinfo-300: #9bbaeb;
+  --color-ezinfo-400: #6095eb;
+  --color-ezinfo-500: #2b73e5;
+  --color-ezinfo-600: #1f62ce;
+  --color-ezinfo-700: #1f56af;
+  --color-ezinfo-800: #1a417f;
+  --color-ezinfo-900: #112649;
+  --color-ezinfo-950: #0b1628;
+  --color-ezsuccess-50: #f3f8f5;
+  --color-ezsuccess-100: #e4f2ea;
+  --color-ezsuccess-200: #b6e4cc;
+  --color-ezsuccess-300: #52ce8c;
+  --color-ezsuccess-400: #23aa62;
+  --color-ezsuccess-500: #1c884e;
+  --color-ezsuccess-600: #1b7545;
+  --color-ezsuccess-700: #1a663d;
+  --color-ezsuccess-800: #154c2f;
+  --color-ezsuccess-900: #0e2c1c;
+  --color-ezsuccess-950: #091910;
+  --color-ezwarn-50: #faf7f2;
+  --color-ezwarn-100: #f5eee1;
+  --color-ezwarn-200: #efd7ae;
+  --color-ezwarn-300: #ebad42;
+  --color-ezwarn-400: #cf8505;
+  --color-ezwarn-500: #a56a04;
+  --color-ezwarn-600: #8e5d07;
+  --color-ezwarn-700: #7a510a;
+  --color-ezwarn-800: #5a3d0a;
+  --color-ezwarn-900: #342407;
+  --color-ezwarn-950: #1e1505;
+  --color-ezdanger-50: #fbf6f6;
+  --color-ezdanger-100: #f7ecec;
+  --color-ezdanger-200: #f2d3d2;
+  --color-ezdanger-300: #eda6a4;
+  --color-ezdanger-400: #ec6e69;
+  --color-ezdanger-500: #e42b24;
+  --color-ezdanger-600: #c7231e;
+  --color-ezdanger-700: #ac231e;
+  --color-ezdanger-800: #7f1d1a;
+  --color-ezdanger-900: #4b1311;
+  --color-ezdanger-950: #2b0c0b;
+}
+
+@import "@nuxt/ui";
+
+/* 우리 디자인 시스템 — primitive + semantic. Nuxt UI보다 먼저 온다 */
+@import "@ezwel/ui/tokens.css";
+/* 그리드 스타일(토큰 참조) */
+@import "../../../shared/grid/tabulator-ez.css";
+
+
+/* ===========================================================================
+ * 토큰 브리지 — @ezwel/ui → Nuxt UI
+ * ---------------------------------------------------------------------------
+ * Nuxt UI도 primitive(`--ui-color-*-500`) → semantic(`--ui-text`) 2층이라
+ * 두 층 모두 우리 값으로 갈아 끼울 수 있다.
+ *
+ * 스케일이 양쪽 다 11단이라 **자리 대 자리로 맞으면 된다.**
+ *   ez 5 10 20 30 40 50 60 70 80 90 95
+ *   ui 50 100 200 300 400 500 600 700 800 900 950
+ * Nuxt UI는 라이트에서 primary 면에 500을 쓰므로, 이 매핑이면 CTA 배경이
+ * 우리 step 50(4.5:1)에 앉는다 — 대비 약속이 그대로 넘어온다.
+ *
+ * 선택자를 `.light, :root`로 맞춘 건 Nuxt UI가 같은 특정도로 정의하기 때문이다.
+ * `:root`만 쓰면 `.light`가 걸린 문서에서 지지 않는다.
+ * ========================================================================= */
+.light, :root {
+  --ui-color-primary-50: var(--ez-color-primary-5);
+  --ui-color-primary-100: var(--ez-color-primary-10);
+  --ui-color-primary-200: var(--ez-color-primary-20);
+  --ui-color-primary-300: var(--ez-color-primary-30);
+  --ui-color-primary-400: var(--ez-color-primary-40);
+  --ui-color-primary-500: var(--ez-color-primary-50);
+  --ui-color-primary-600: var(--ez-color-primary-60);
+  --ui-color-primary-700: var(--ez-color-primary-70);
+  --ui-color-primary-800: var(--ez-color-primary-80);
+  --ui-color-primary-900: var(--ez-color-primary-90);
+  --ui-color-primary-950: var(--ez-color-primary-95);
+
+  --ui-color-neutral-50: var(--ez-color-gray-5);
+  --ui-color-neutral-100: var(--ez-color-gray-10);
+  --ui-color-neutral-200: var(--ez-color-gray-20);
+  --ui-color-neutral-300: var(--ez-color-gray-30);
+  --ui-color-neutral-400: var(--ez-color-gray-40);
+  --ui-color-neutral-500: var(--ez-color-gray-50);
+  --ui-color-neutral-600: var(--ez-color-gray-60);
+  --ui-color-neutral-700: var(--ez-color-gray-70);
+  --ui-color-neutral-800: var(--ez-color-gray-80);
+  --ui-color-neutral-900: var(--ez-color-gray-90);
+  --ui-color-neutral-950: var(--ez-color-gray-95);
+
+  --ui-color-error-500: var(--ez-color-danger-50);
+  --ui-color-error-600: var(--ez-color-danger-60);
+  --ui-color-warning-500: var(--ez-color-warning-50);
+  --ui-color-warning-600: var(--ez-color-warning-60);
+  --ui-color-success-500: var(--ez-color-success-50);
+  --ui-color-success-600: var(--ez-color-success-60);
+  --ui-color-info-500: var(--ez-color-secondary-50);
+  --ui-color-info-600: var(--ez-color-secondary-60);
+
+  /* semantic — 여기까지 덮어야 "우리 토큰이 화면을 몬다"가 성립한다 */
+  --ui-text-dimmed: var(--ez-text-disabled);
+  --ui-text-muted: var(--ez-text-muted);
+  --ui-text-toned: var(--ez-text-muted);
+  --ui-text: var(--ez-text-default);
+  --ui-text-highlighted: var(--ez-text-strong);
+  --ui-text-inverted: var(--ez-text-inverse);
+  --ui-bg: var(--ez-surface-default);
+  --ui-bg-muted: var(--ez-surface-sunken);
+  --ui-bg-elevated: var(--ez-surface-hover);
+  --ui-bg-accented: var(--ez-color-gray-20);
+  --ui-border: var(--ez-border-default);
+  --ui-border-muted: var(--ez-border-subtle);
+  --ui-border-accented: var(--ez-border-strong);
+
+  --ui-radius: var(--ez-radius-sm);
+
+  /* 실측 교정 — Nuxt UI의 `--ui-primary`는 라이트에서 **400**을 집는다.
+     자리 대 자리로 매핑하면 CTA 배경이 우리 step 40(3.65:1)이 되어 AA 미달이다.
+     별칭만 step 50으로 끌어올린다(램프 전체를 밀면 텍스트·테두리까지 같이 어긋난다). */
+  --ui-primary: var(--ez-color-primary-50);
+}
+
+/* 우리는 다크를 `[data-theme]`로 켜고 Nuxt UI는 `.dark`를 본다 — 부트스트랩에서 클래스를 같이 단다 */
+.dark {
+  --ui-text-dimmed: var(--ez-text-disabled);
+  --ui-text-muted: var(--ez-text-muted);
+  --ui-text-toned: var(--ez-text-muted);
+  --ui-text: var(--ez-text-default);
+  --ui-text-highlighted: var(--ez-text-strong);
+  --ui-text-inverted: var(--ez-text-inverse);
+  --ui-bg: var(--ez-surface-default);
+  --ui-bg-muted: var(--ez-surface-sunken);
+  --ui-bg-elevated: var(--ez-surface-hover);
+  --ui-bg-accented: var(--ez-color-gray-70);
+  --ui-border: var(--ez-border-default);
+  --ui-border-muted: var(--ez-border-subtle);
+  --ui-border-accented: var(--ez-border-strong);
+  --ui-primary: var(--ez-color-primary-30);
+}
+
+body {
+  font-family: var(--ez-font-family);
+  font-size: var(--ez-font-size-sm);
+  color: var(--ez-text-default);
+  background: var(--ez-surface-canvas);
+  margin: 0;
+}

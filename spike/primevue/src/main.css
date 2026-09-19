@@ -1,0 +1,11 @@
+@import "@ezwel/ui/tokens.css";
+@import "@ezwel/ui/base.css";
+@import "../../../shared/grid/tabulator-ez.css";
+
+body {
+  font-family: var(--ez-font-family);
+  font-size: var(--ez-font-size-sm);
+  color: var(--ez-text-default);
+  background: var(--ez-surface-canvas);
+  margin: 0;
+}

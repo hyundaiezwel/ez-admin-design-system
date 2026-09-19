@@ -1,0 +1,110 @@
+<script setup lang="ts">
+/**
+ * Tabulator 래퍼 — 화면이 그리드를 "쓰는" 단위.
+ *
+ * PoC 화면을 옮겨 오지 않았다. PoC는 요건을 검증하려고 토글과 계측이 붙어 있던 실험대이고,
+ * 실제 화면에 필요한 것은 **컬럼과 데이터를 주면 표가 되는 것** 하나다.
+ * PoC에서 가져온 건 검증으로 값이 확인된 두 조각뿐이다 — `pasteGuard`, `rowSelect`.
+ *
+ * 스타일은 가장 얇은 기본 테마(`tabulator_simple`) 위에 우리 토큰을 덮는다(`./tabulator-ez.css`).
+ * UI 라이브러리(Nuxt UI / PrimeVue)와 같은 화면에 놓였을 때 서로 침범하는지가
+ * 이번 스파이크의 측정 항목 중 하나다.
+ */
+import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { TabulatorFull as Tabulator } from 'tabulator-tables'
+import { createPasteGuard } from './pasteGuard.js'
+import { createRowSelect } from './rowSelect.js'
+
+const props = withDefaults(
+  defineProps<{
+    columns: any[]
+    rows: any[]
+    /** 붙여넣기 검증 규칙. field → rule. 규칙 없는 컬럼은 붙여넣기가 거부된다 */
+    pasteRules?: Record<string, unknown>
+    height?: string
+    /** 편집·범위 복붙을 켠다. 조회 전용 화면은 끈다 */
+    editable?: boolean
+  }>(),
+  { height: '420px', editable: false, pasteRules: () => ({}) },
+)
+
+const emit = defineEmits<{
+  selectionChange: [count: number]
+  pasteReport: [report: { ok: boolean; summary: string }]
+}>()
+
+const el = ref<HTMLElement | null>(null)
+const table = shallowRef<any>(null)
+
+const guard = createPasteGuard({
+  getTable: () => table.value,
+  rules: props.pasteRules,
+  onReport: (r: any) => emit('pasteReport', r),
+})
+
+const rowSel = createRowSelect({
+  getTable: () => table.value,
+  idField: 'id',
+  onChange: ({ count }: { count: number }) => emit('selectionChange', count),
+})
+
+/** 체크박스 컬럼을 앞에 붙인다. 컬럼 정의가 클릭 핸들러까지 들고 있어 별도 배선이 없다 */
+const withSelect = (cols: any[]) => [rowSel.column(), ...cols]
+
+onMounted(() => {
+  if (!el.value) return
+  table.value = new Tabulator(el.value, {
+    data: props.rows,
+    columns: withSelect(props.columns),
+    height: props.height,
+    layout: 'fitColumns',
+    index: 'id',
+    // 대용량 목록은 가상 렌더가 기본이다. 20행짜리 화면에도 켜 둔다 — 끄고 켜는 분기가 생기면
+    // "이 화면만 느리다"의 원인이 하나 는다
+    renderVertical: 'virtual',
+    placeholder: '조회 결과가 없습니다.',
+    // 선택 행 강조 — 배경만으로는 대비 1.1:1이라 좌측 막대를 함께 준다(디자인 시스템 §목록 규칙)
+    rowFormatter: (row: any) => {
+      row.getElement().classList.toggle('ez-row-selected', rowSel.isSelected(row.getIndex()))
+    },
+    ...(props.editable
+      ? {
+          selectableRange: 1,
+          selectableRangeColumns: false, // 헤더 클릭은 정렬로 둔다 (PoC 결론)
+          selectableRangeRows: true,
+          selectableRangeClearCells: true,
+          clipboard: true,
+          clipboardCopyRowRange: 'range',
+          clipboardPasteAction: 'range',
+          clipboardPasteParser: guard.parser,
+          clipboardCopyConfig: { rowHeaders: false, columnHeaders: false },
+        }
+      : {}),
+  })
+
+})
+
+watch(
+  () => props.rows,
+  (rows) => table.value?.replaceData(rows),
+)
+
+watch(
+  () => props.columns,
+  (cols) => table.value?.setColumns(withSelect(cols)),
+)
+
+onBeforeUnmount(() => table.value?.destroy())
+
+defineExpose({
+  /** 조회 결과 전체를 내보낸다. 화면에 보이는 행만이 아니다 */
+  exportCsv: (name: string) => table.value?.download('csv', name, { bom: true }),
+  undoPaste: () => guard.undo(),
+  clearSelection: () => rowSel.clear(),
+  selectedData: () => rowSel.selectedData(),
+})
+</script>
+
+<template>
+  <div ref="el" class="ez-grid" />
+</template>

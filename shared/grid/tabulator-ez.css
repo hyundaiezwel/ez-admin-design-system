@@ -1,0 +1,134 @@
+/* Tabulator 스타일.
+ *
+ * 처음엔 기본 테마를 아예 안 불러오고 색만 우리가 칠하려 했는데 **표가 세로로 무너졌다.**
+ * Tabulator의 기본 CSS에는 색뿐 아니라 레이아웃 구조(가상 렌더 컨테이너의 position,
+ * 행·셀의 display·width 계산)가 들어 있다. 구조만 뽑은 배포본은 없다.
+ *
+ * 그래서 가장 얇은 `tabulator_simple`을 깔고 그 위를 토큰으로 덮는다.
+ * 순서가 중요하다 — import가 먼저, 우리 규칙이 뒤. */
+@import 'tabulator-tables/dist/css/tabulator_simple.min.css';
+
+.ez-grid {
+  font-family: var(--ez-font-family);
+  font-size: var(--ez-font-size-xs);
+  color: var(--ez-text-default);
+  background: var(--ez-surface-default);
+  border: 1px solid var(--ez-border-default);
+  border-radius: var(--ez-radius-lg);
+  overflow: hidden;
+}
+
+.ez-grid .tabulator-header {
+  background: var(--ez-surface-sunken);
+  border-bottom: 1px solid var(--ez-border-default);
+  color: var(--ez-text-muted);
+  font-weight: var(--ez-font-weight-medium);
+}
+
+.ez-grid .tabulator-col {
+  background: transparent;
+  border-right: 1px solid var(--ez-border-subtle);
+}
+
+.ez-grid .tabulator-col-content {
+  padding: var(--ez-space-2) var(--ez-space-3);
+}
+
+.ez-grid .tabulator-col-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ez-grid .tabulator-header-filter input,
+.ez-grid .tabulator-header-filter select {
+  width: 100%;
+  height: var(--ez-size-sm);
+  padding: 0 var(--ez-space-2);
+  background: var(--ez-field-bg);
+  color: var(--ez-text-default);
+  border: 1px solid var(--ez-field-border);
+  border-radius: var(--ez-radius-sm);
+  font: inherit;
+}
+
+/* `tabulator_simple`이 짝수 행과 셀 글자색을 자기 값으로 박아 둔다.
+   특정도가 같아 우리 규칙이 뒤에 오는 것만으로는 부족한 자리가 있어 클래스를 함께 건다 —
+   안 그러면 다크 테마에서 표만 흰 판으로 남는다. */
+.ez-grid .tabulator-row,
+.ez-grid .tabulator-row.tabulator-row-even,
+.ez-grid .tabulator-row.tabulator-row-odd {
+  background: var(--ez-surface-default);
+  color: var(--ez-text-default);
+  border-bottom: 1px solid var(--ez-border-subtle);
+}
+
+.ez-grid .tabulator-row:hover {
+  background: var(--ez-surface-hover);
+}
+
+.ez-grid .tabulator-row.ez-row-selected {
+  background: var(--ez-surface-selected);
+  box-shadow: inset 3px 0 0 var(--ez-action-primary);
+}
+
+.ez-grid .tabulator-cell {
+  padding: var(--ez-space-2) var(--ez-space-3);
+  color: var(--ez-text-default);
+  border-right: 1px solid var(--ez-border-subtle);
+}
+
+/* 행 높이를 우리 규격(md 34px)에 맞춘다. 기본 테마는 여백이 더 넉넉하다 */
+.ez-grid .tabulator-row .tabulator-cell {
+  height: auto;
+  min-height: 0;
+  line-height: var(--ez-line-height-tight);
+}
+
+.ez-grid .tabulator-cell.tabulator-editing input {
+  background: var(--ez-field-bg);
+  color: var(--ez-text-default);
+  border: 1px solid var(--ez-border-focus);
+  border-radius: var(--ez-radius-sm);
+}
+
+/* `selectableRange`를 켜면 SelectRange 모듈이 첫 컬럼(우리 체크박스 컬럼)을
+   '행 헤더' 거터로 바꾸고 자기 회색(#d6d6d6)을 칠한다. 토큰으로 되돌린다. */
+.ez-grid .tabulator-cell.tabulator-range-row-header,
+.ez-grid .tabulator-col.tabulator-range-row-header {
+  background: var(--ez-surface-sunken);
+  color: var(--ez-text-muted);
+  border-right: 1px solid var(--ez-border-default);
+}
+
+/* 범위 선택 표시 — 기본 테마 없이도 선택 범위가 보여야 한다 */
+.ez-grid .tabulator-cell.tabulator-range-selected {
+  background: var(--ez-surface-selected);
+}
+.ez-grid .tabulator-cell.tabulator-range-highlight {
+  outline: 2px solid var(--ez-action-primary);
+  outline-offset: -2px;
+}
+
+.ez-grid .tabulator-placeholder {
+  color: var(--ez-text-muted);
+  padding: var(--ez-space-10);
+}
+
+/* 상태 뱃지 — 그리드 셀 안에서는 Vue 컴포넌트를 못 쓴다(formatter가 HTML 문자열이다).
+   EzBadge와 같은 토큰을 쓰므로 두 곳의 색이 갈라지지 않는다. */
+.ez-grid .g-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--ez-space-2);
+  border: 1px solid;
+  border-radius: var(--ez-radius-sm);
+  font-size: var(--ez-font-size-2xs);
+  font-weight: var(--ez-font-weight-medium);
+  line-height: var(--ez-line-height-tight);
+}
+.g-badge--neutral { color: var(--ez-status-neutral-fg); background: var(--ez-status-neutral-bg); border-color: var(--ez-status-neutral-bd); }
+.g-badge--info    { color: var(--ez-status-info-fg);    background: var(--ez-status-info-bg);    border-color: var(--ez-status-info-bd); }
+.g-badge--success { color: var(--ez-status-success-fg); background: var(--ez-status-success-bg); border-color: var(--ez-status-success-bd); }
+.g-badge--warning { color: var(--ez-status-warning-fg); background: var(--ez-status-warning-bg); border-color: var(--ez-status-warning-bd); }
+.g-badge--danger  { color: var(--ez-status-danger-fg);  background: var(--ez-status-danger-bg);  border-color: var(--ez-status-danger-bd); }

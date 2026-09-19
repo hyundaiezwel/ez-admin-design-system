@@ -1,0 +1,10 @@
+{
+  "name": "ez-admin-design-system",
+  "private": true,
+  "type": "module",
+  "workspaces": ["spike/*"],
+  "scripts": {
+    "spike:nuxt": "npm run dev -w @spike/nuxt-ui",
+    "spike:prime": "npm run dev -w @spike/primevue"
+  }
+}
