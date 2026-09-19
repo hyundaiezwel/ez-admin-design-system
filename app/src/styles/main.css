@@ -1,5 +1,6 @@
 @import '@ezwel/ui/all.css';
 @import '../../../shared/grid/tabulator-ez.css';
+@import './websquare.css';
 
 html, body, #app { height: 100%; }
 

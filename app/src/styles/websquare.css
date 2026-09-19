@@ -1,0 +1,216 @@
+/* =============================================================================
+ * WebSquare 스킨 — 사내 관리자센터의 화면 관용을 그대로 옮긴다
+ * -----------------------------------------------------------------------------
+ * 화면 컴포넌트(`pages/*`)는 EZ 셸과 **같은 것을 쓴다.** 여기서 하는 일은 그 마크업을
+ * WebSquare 관용으로 다시 칠하는 것뿐이다 — 그래야 두 구조를 같은 화면으로 비교할 수 있다.
+ *
+ * 값은 `websquare-bo-ui/cm/css/{base,contents}.css` 실측이다. 눈대중이 아니다.
+ *
+ *   html font-size 10px        → 1.4rem = 14px 이 본문
+ *   letter-spacing -0.02rem    → 전역
+ *   btn_cm  32px · radius 6 · 1.4rem/600 · #444 · border #ccc
+ *   btn .pt #348FE2            → CTA는 파랑이다. 브랜드 초록(#009782)이 아니다
+ *   shbox   하단 1px #ccc 실선이 좌우 -48px 까지 뻗는다
+ *   gvw     헤더 34px #f3f5f6 · **본문 셀마다 1px #ccc + radius 6** ← 가장 특징적
+ *   총건수   #009782
+ * ========================================================================== */
+
+.ws {
+  /* 원본은 html에 10px을 건다. 스킨 스코프 안에서만 재현한다 */
+  font-size: 14px;
+  letter-spacing: -0.02rem;
+  font-variant-numeric: tabular-nums;
+  color: #222;
+}
+
+/* ---------- 페이지 골격 ---------- */
+
+/* pgtbox가 타이틀을 맡으므로 화면 자체의 머리는 titbox 로 낮춘다 */
+.ws .pg { gap: 0; }
+.ws .pg__head {
+  align-items: center;
+  min-height: 32px;
+  margin-bottom: 12px;
+}
+.ws .pg__title { display: none; } /* 타이틀은 pgtbox 가 이미 그렸다 */
+.ws .pg__sub { margin: 0; color: #727272; font-size: 1.3rem; }
+
+/* ---------- shbox : 조회 영역 ---------- */
+.ws .sfb {
+  position: relative;
+  display: block;
+  margin-bottom: 20px;
+  padding: 0 0 20px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+/* 하단 실선이 콘텐츠 패딩 밖(-48px)까지 뻗는 것이 원본의 인상이다 */
+.ws .sfb::after {
+  content: '';
+  position: absolute;
+  left: -48px;
+  right: -48px;
+  bottom: -1px;
+  height: 1px;
+  background: #ccc;
+}
+
+.ws .sfb__fields { gap: 0 24px; align-items: center; }
+.ws .field { flex-direction: row; align-items: center; gap: 12px; min-width: 0; height: 40px; }
+.ws .field__label {
+  min-width: 72px;
+  color: #444;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-align: left;
+}
+.ws .field__help, .ws .field__err { display: none; }
+.ws .sfb .field__help, .ws .sfb .field__err { display: none; }
+.ws .sfb__actions { align-self: center; }
+
+/* ---------- titbox / btnbox ---------- */
+.ws .toolbar {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+  color: #444;
+}
+.ws .toolbar b { color: #009782; margin-left: 4px; font-weight: 700; }
+
+/* ---------- 카드 : WebSquare에는 카드가 없다. 제목 + 실선이다 ---------- */
+.ws .card {
+  padding: 0;
+  margin-bottom: 24px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.ws .card__title {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  margin: 0 0 12px;
+  padding: 0;
+  color: #222;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.ws .card__title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  margin-right: 8px;
+  background: #009782;
+}
+
+/* ---------- 버튼 : btn_cm ---------- */
+.ws .p-button {
+  height: 32px;
+  min-height: 32px;
+  padding: 0 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #444;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02rem;
+}
+.ws .p-button:enabled:hover { background: #FAFAFA; border-color: #bbb; color: #222; }
+.ws .p-button:enabled:active { box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%); }
+.ws .p-button:disabled { color: #bbb; background: #EEE; border-color: #ccc; }
+
+/* CTA는 파랑이다. 사내 원본이 그렇다 — 브랜드 초록이 아니다 */
+.ws .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger) {
+  border-color: #348FE2;
+  background: #348FE2;
+  color: #fff;
+}
+.ws .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):enabled:hover {
+  border-color: #1a65a8;
+  background: #1a65a8;
+}
+.ws .p-button-danger { border-color: #e74c3c; background: #e74c3c; color: #fff; }
+.ws .p-button-sm { height: 28px; padding: 0 12px; font-size: 1.3rem; }
+
+/* ---------- 입력 ---------- */
+.ws .p-inputtext,
+.ws .p-select,
+.ws .p-autocomplete-input,
+.ws .p-inputnumber-input,
+.ws .p-textarea {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  font-size: 1.4rem;
+  letter-spacing: -0.02rem;
+}
+.ws .p-textarea { height: auto; padding: 8px 10px; }
+.ws .p-inputtext:enabled:focus, .ws .p-select:not(.p-disabled).p-focus { border-color: #348FE2; box-shadow: none; }
+.ws .p-inputtext[readonly] { background: #f3f5f6; color: #727272; }
+
+/* ---------- 그리드 : wq_gvw ----------
+   본문 셀마다 둥근 테두리가 들어가는 것이 원본에서 가장 눈에 띄는 관용이다.
+   Tabulator의 셀에 같은 처리를 넣는다. */
+.ws .ez-grid {
+  border: 0;
+  border-top: 1px solid #aaa;
+  border-radius: 0;
+  background: #fff;
+  font-size: 1.4rem;
+}
+
+.ws .ez-grid .tabulator-header { background: #f3f5f6; border-bottom: 1px solid #ccc; }
+.ws .ez-grid .tabulator-header .tabulator-col { background: #f3f5f6; border-right: 1px solid #ccc; }
+.ws .ez-grid .tabulator-col-content { padding: 0 6px; height: 34px; display: flex; align-items: center; }
+.ws .ez-grid .tabulator-col-title { color: #222; font-size: 1.4rem; font-weight: 400; }
+
+.ws .ez-grid .tabulator-row,
+.ws .ez-grid .tabulator-row.tabulator-row-even,
+.ws .ez-grid .tabulator-row.tabulator-row-odd {
+  min-height: 35px;
+  background: #fff;
+  color: #222;
+  border-bottom: 1px solid #ccc;
+}
+
+.ws .ez-grid .tabulator-cell {
+  height: 35px;
+  padding: 2px;
+  border-right: 0;
+  color: #222;
+  font-size: 1.4rem;
+}
+
+/* 원본의 `nobr` — 셀 안쪽에 테두리 박스가 하나 더 있다 */
+.ws .ez-grid .tabulator-cell:not(.tabulator-range-row-header)::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.ws .ez-grid .tabulator-cell { position: relative; }
+.ws .ez-grid .tabulator-cell.tabulator-range-row-header { background: #f3f5f6; }
+
+.ws .ez-grid .tabulator-row:hover { background: #f8fbfb; }
+.ws .ez-grid .tabulator-row.ez-row-selected { background: #edfefb; box-shadow: inset 3px 0 0 #009782; }
+
+/* 뱃지 — 원본은 사각에 가깝고 색이 옅다 */
+.ws .ez-grid .g-badge,
+.ws .p-tag {
+  border-radius: 3px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* ---------- 차트는 스킨 대상이 아니다 ----------
+   색까지 바꾸면 "구조 이관"이 아니라 다른 제품이 된다. 토큰 팔레트를 그대로 둔다 */

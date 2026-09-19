@@ -71,6 +71,9 @@ function bumpScale() {
         <span class="hd__badge-text">가{{ scale }}</span>
       </button>
 
+      <!-- 같은 화면을 WebSquare 구조로 본다. 구조 비교가 목적이라 셸만 갈린다 -->
+      <RouterLink class="hd__skin" to="/ws">WebSquare 구조로 보기</RouterLink>
+
       <button class="hd__icon hd__icon--dot" type="button" aria-label="알림 3건">
         <AppIcon name="bell" />
       </button>
@@ -150,6 +153,21 @@ function bumpScale() {
   border-radius: var(--ez-radius-full);
   background: var(--ez-action-danger);
 }
+
+.hd__skin {
+  margin-right: var(--ez-space-2);
+  padding: 0 var(--ez-space-3);
+  height: var(--ez-size-sm);
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--ez-border-default);
+  border-radius: var(--ez-radius-full);
+  color: var(--ez-text-muted);
+  font-size: var(--ez-font-size-2xs);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hd__skin:hover { border-color: var(--ez-border-strong); color: var(--ez-text-default); }
 
 .hd__avatar {
   display: grid;

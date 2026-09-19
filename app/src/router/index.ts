@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import AppShell from '../layouts/AppShell.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
+import WsShell from '../layouts/WsShell.vue'
 import { titleOf } from '../app/menu'
 
 /**
@@ -31,6 +32,25 @@ const routes: RouteRecordRaw[] = [
       { path: 'system/codes', component: () => import('../pages/CodePage.vue') },
     ],
   },
+  /**
+   * WebSquare 구조 이관판. **화면 컴포넌트는 위와 같은 것을 쓴다** —
+   * 다른 것은 셸과 스킨 CSS뿐이라 두 구조를 같은 화면으로 비교할 수 있다.
+   */
+  {
+    path: '/ws',
+    component: WsShell,
+    children: [
+      { path: '', component: () => import('../pages/DashboardPage.vue') },
+      { path: 'cs/inquiries', component: () => import('../pages/InquiryPage.vue') },
+      { path: 'cs/members', component: () => import('../pages/MemberPage.vue') },
+      { path: 'sales/promotions', component: () => import('../pages/PromotionPage.vue') },
+      { path: 'sales/orders', component: () => import('../pages/OrderPage.vue') },
+      { path: 'sales/products', component: () => import('../pages/ProductFormPage.vue') },
+      { path: 'stats', component: () => import('../pages/StatsPage.vue') },
+      { path: 'system/catalog', component: () => import('../pages/CatalogPage.vue') },
+      { path: 'system/codes', component: () => import('../pages/CodePage.vue') },
+    ],
+  },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
@@ -41,6 +61,8 @@ export const router = createRouter({
 })
 
 router.afterEach((to) => {
-  const name = to.path === '/login' ? '로그인' : titleOf(to.path)
-  document.title = `${name} — EZ Admin`
+  const ws = to.path.startsWith('/ws')
+  const path = ws ? to.path.replace(/^\/ws/, '') || '/' : to.path
+  const name = path === '/login' ? '로그인' : titleOf(path)
+  document.title = `${name} — ${ws ? 'WebSquare 이관판' : 'EZ Admin'}`
 })

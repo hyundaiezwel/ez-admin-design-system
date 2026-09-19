@@ -55,15 +55,10 @@ const merged = computed(() => {
   const line = token('--ez-border-subtle')
   const surface = token('--ez-surface-default')
 
-  // 계열 색은 step 50 계열로 고른다 — 면으로 쓰이므로 흰 글자·레이블이 얹혀도 읽힌다
-  const palette = [
-    token('--ez-color-primary-50'),
-    token('--ez-color-secondary-50'),
-    token('--ez-color-warning-50'),
-    token('--ez-color-success-50'),
-    token('--ez-color-danger-50'),
-    token('--ez-color-gray-50'),
-  ]
+  // **범주형 팔레트를 쓴다.** 의미색(success 초록·danger 빨강)을 범주에 쓰면
+  // "좋음/나쁨"으로 읽힌다 — 첫 대시보드가 그랬다. `--ez-chart-*`는 채도를 낮추고
+  // 휘도를 교차시킨 계열이고, 라이트·다크 양쪽에서 3:1을 넘는다(@ezwel/ui v1.2.0).
+  const palette = [1, 2, 3, 4, 5, 6].map((i) => token(`--ez-chart-${i}`))
 
   const axis = {
     axisLine: { lineStyle: { color: line } },
