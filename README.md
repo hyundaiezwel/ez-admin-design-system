@@ -11,7 +11,11 @@
 **UI 라이브러리는 PrimeVue 4로 확정**했다(2026-09-19). 선행 과제였던 토큰 결함은
 `@ezwel/ui` v1.1.0으로 해소했고, 같은 화면 재측정에서 대비 15지점 전부 통과한다.
 
-본 앱은 아직 없다. `spike/nuxt-ui`는 선정 근거 기록으로 남겨 두되 더 갱신하지 않는다
+본 앱은 아직 없다.
+
+저장소는 **private**이다. 조직 free 플랜에서는 private Pages가 안 되므로 라이브 데모는
+띄우지 않는다 — `.github/workflows/pages.yml`은 수동 실행만 남겨 뒀다.
+디자인 시스템 문서 사이트는 공개돼 있다: https://hyundaiezwel.github.io/ez-design-system/ `spike/nuxt-ui`는 선정 근거 기록으로 남겨 두되 더 갱신하지 않는다
 (팔레트 사본이 v1.0.0에 멈춰 있다).
 
 ```

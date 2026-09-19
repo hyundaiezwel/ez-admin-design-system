@@ -9,9 +9,10 @@ name: Pages
 # 조직 플랜이 free라 **저장소가 public일 때만 동작한다**(private Pages는 Enterprise Cloud 전용).
 # 켜는 법: Settings > Pages > Source = "GitHub Actions"
 
+# 이 저장소는 private을 유지하기로 했다(2026-09-19). free 플랜에서 private Pages는
+# 안 되므로 push마다 돌리면 deploy 잡이 매번 실패해 빨간 X만 쌓인다.
+# **수동 실행만** 남긴다 — 공개로 바꾸는 날 push 트리거를 되살리면 된다.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -33,8 +34,8 @@ jobs:
           node-version: 22
           cache: npm
 
-      # @ezwel/ui 는 private 저장소의 git 의존성이다. 그 저장소가 private인 동안에는
-      # 읽기 권한 PAT이 필요하다(저장소 시크릿 EZ_UI_TOKEN). public이 되면 이 단계는 건너뛴다.
+      # @ezwel/ui 는 이제 public이라 토큰 없이 받아진다. 다시 private으로 돌리면
+      # 읽기 권한 PAT(저장소 시크릿 EZ_UI_TOKEN)만 넣으면 이 단계가 살아난다.
       - name: private 의존성 인증
         if: env.EZ_UI_TOKEN != ''
         env:
