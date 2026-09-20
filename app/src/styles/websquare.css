@@ -159,7 +159,7 @@
 /* ---------- 그리드 : wq_gvw ----------
    본문 셀마다 둥근 테두리가 들어가는 것이 원본에서 가장 눈에 띄는 관용이다.
    Tabulator의 셀에 같은 처리를 넣는다. */
-.ws .ez-grid {
+.ws .ez-datagrid {
   border: 0;
   border-top: 1px solid #aaa;
   border-radius: 0;
@@ -167,21 +167,21 @@
   font-size: 1.4rem;
 }
 
-.ws .ez-grid .tabulator-header { background: #f3f5f6; border-bottom: 1px solid #ccc; }
-.ws .ez-grid .tabulator-header .tabulator-col { background: #f3f5f6; border-right: 1px solid #ccc; }
-.ws .ez-grid .tabulator-col-content { padding: 0 6px; height: 34px; display: flex; align-items: center; }
-.ws .ez-grid .tabulator-col-title { color: #222; font-size: 1.4rem; font-weight: 400; }
+.ws .ez-datagrid .tabulator-header { background: #f3f5f6; border-bottom: 1px solid #ccc; }
+.ws .ez-datagrid .tabulator-header .tabulator-col { background: #f3f5f6; border-right: 1px solid #ccc; }
+.ws .ez-datagrid .tabulator-col-content { padding: 0 6px; height: 34px; display: flex; align-items: center; }
+.ws .ez-datagrid .tabulator-col-title { color: #222; font-size: 1.4rem; font-weight: 400; }
 
-.ws .ez-grid .tabulator-row,
-.ws .ez-grid .tabulator-row.tabulator-row-even,
-.ws .ez-grid .tabulator-row.tabulator-row-odd {
+.ws .ez-datagrid .tabulator-row,
+.ws .ez-datagrid .tabulator-row.tabulator-row-even,
+.ws .ez-datagrid .tabulator-row.tabulator-row-odd {
   min-height: 35px;
   background: #fff;
   color: #222;
   border-bottom: 1px solid #ccc;
 }
 
-.ws .ez-grid .tabulator-cell {
+.ws .ez-datagrid .tabulator-cell {
   height: 35px;
   padding: 2px;
   border-right: 0;
@@ -190,7 +190,7 @@
 }
 
 /* 원본의 `nobr` — 셀 안쪽에 테두리 박스가 하나 더 있다 */
-.ws .ez-grid .tabulator-cell:not(.tabulator-range-row-header)::before {
+.ws .ez-datagrid .tabulator-cell:not(.tabulator-range-row-header)::before {
   content: '';
   position: absolute;
   inset: 2px;
@@ -198,14 +198,14 @@
   border-radius: 6px;
   pointer-events: none;
 }
-.ws .ez-grid .tabulator-cell { position: relative; }
-.ws .ez-grid .tabulator-cell.tabulator-range-row-header { background: #f3f5f6; }
+.ws .ez-datagrid .tabulator-cell { position: relative; }
+.ws .ez-datagrid .tabulator-cell.tabulator-range-row-header { background: #f3f5f6; }
 
-.ws .ez-grid .tabulator-row:hover { background: #f8fbfb; }
-.ws .ez-grid .tabulator-row.ez-row-selected { background: #edfefb; box-shadow: inset 3px 0 0 #009782; }
+.ws .ez-datagrid .tabulator-row:hover { background: #f8fbfb; }
+.ws .ez-datagrid .tabulator-row.ez-row-selected { background: #edfefb; box-shadow: inset 3px 0 0 #009782; }
 
 /* 뱃지 — 원본은 사각에 가깝고 색이 옅다 */
-.ws .ez-grid .g-badge,
+.ws .ez-datagrid .g-badge,
 .ws .p-tag {
   border-radius: 3px;
   font-size: 1.2rem;

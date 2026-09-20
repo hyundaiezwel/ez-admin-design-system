@@ -113,5 +113,5 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="el" class="ez-grid" />
+  <div ref="el" class="ez-datagrid" />
 </template>

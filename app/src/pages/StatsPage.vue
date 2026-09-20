@@ -5,11 +5,13 @@
  * `aria.decal` 토글이 이 화면의 핵심이다. 켜면 계열마다 패턴이 입혀져 색 없이도 구분된다.
  * 접근성 문서의 "색에만 기대지 않기"가 차트에서 늘 깨지는데, ECharts는 이걸 기본 제공한다.
  */
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import ToggleSwitch from 'primevue/toggleswitch'
 import EzChart from '../app/EzChart.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery } from '../app/useMockQuery'
 import { makeOrders } from '@fixtures/orders'
 import { won } from '@fixtures/rng'
 
@@ -23,6 +25,9 @@ const days = computed(() => {
 })
 
 const orders = makeOrders(600)
+
+const { loading, error, reload } = useMockQuery(() => [1], { latency: 500 })
+onMounted(reload)
 const CHANNELS = ['웹', '앱', '제휴몰']
 const CATEGORIES = ['상품권', '건강', '여행', '문화', '도서']
 
@@ -101,6 +106,7 @@ const table = computed(() =>
       </label>
     </div>
 
+    <QueryState :loading="loading" :error="error" :lines="8" @retry="reload">
     <div class="grid2">
       <section class="card" style="grid-column: span 2">
         <h2 class="card__title">채널별 주문 추이 (누적 막대)</h2>
@@ -122,6 +128,7 @@ const table = computed(() =>
         <EzChart :option="heat" :decal="false" height="260px" />
       </section>
     </div>
+    </QueryState>
 
     <section class="card">
       <h2 class="card__title">분류별 집계</h2>
@@ -152,12 +159,12 @@ const table = computed(() =>
 </template>
 
 <style scoped>
-.decal { display: flex; align-items: flex-start; gap: var(--ez-space-3); }
-.decal__label { display: flex; flex-direction: column; gap: 2px; font-size: var(--ez-font-size-xs); cursor: pointer; }
+.decal { display: flex; align-items: flex-start; gap: var(--ez-gap-inter); }
+.decal__label { display: flex; flex-direction: column; gap: var(--ez-space-0-5); font-size: var(--ez-font-size-xs); cursor: pointer; max-inline-size: var(--ez-measure); }
 .decal__label span { color: var(--ez-text-muted); }
 
 .st { width: 100%; border-collapse: collapse; font-size: var(--ez-font-size-xs); }
-.st th, .st td { padding: var(--ez-space-3) var(--ez-space-3); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
+.st th, .st td { padding: var(--ez-gap-intra) var(--ez-gap-inter); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
 .st thead th { color: var(--ez-text-muted); font-weight: var(--ez-font-weight-medium); }
 .st .num { text-align: right; font-variant-numeric: tabular-nums; }
 .st tfoot th, .st tfoot td { border-top: 2px solid var(--ez-border-default); border-bottom: none; font-weight: var(--ez-font-weight-bold); color: var(--ez-text-strong); }

@@ -5,7 +5,7 @@
  * 이 화면의 요점은 **상태가 입력 가능 항목을 정한다**는 것이다. 규칙을 화면에 흩지 않고
  * fixtures의 `EDITABLE` 표 하나에서 읽는다 — 흩어 두면 "진행 중인데 왜 수정되지"가 난다.
  */
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
@@ -16,6 +16,8 @@ import Drawer from 'primevue/drawer'
 import Dialog from 'primevue/dialog'
 import { EzBadge, notify } from '@ezwel/ui'
 import TabGrid from '@shared/grid/TabGrid.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery, ERROR_KEYWORD } from '../app/useMockQuery'
 import { makePromotions, PROMO_STATUS, PROMO_KINDS, PROMO_TARGETS, PROMO_STATUS_TONE, EDITABLE, type Promotion } from '@fixtures/promotions'
 import { won } from '@fixtures/rng'
 
@@ -29,12 +31,17 @@ const noEnd = ref(false)
 const period = ref<Date[] | null>(null)
 const confirmStop = ref(false)
 
-const rows = computed(() =>
-  ALL.value.filter((p) => {
-    const f = applied.value
-    return (!f.keyword || p.name.includes(f.keyword) || p.id.includes(f.keyword)) && (!f.status || p.status === f.status)
-  }),
+const { rows, loading, error, reload } = useMockQuery(
+  () =>
+    ALL.value.filter(
+      (p) =>
+        (!applied.value.keyword || p.name.includes(applied.value.keyword) || p.id.includes(applied.value.keyword)) &&
+        (!applied.value.status || p.status === applied.value.status),
+    ),
+  { failIf: () => applied.value.keyword.includes(ERROR_KEYWORD) },
 )
+
+onMounted(reload)
 
 /** 현재 편집 대상의 잠금 규칙. 상태가 없으면 전부 잠근다 */
 const lock = computed(() => (edit.value ? EDITABLE[edit.value.status] : EDITABLE.종료))
@@ -64,6 +71,7 @@ function save() {
   if (!edit.value) return
   const i = ALL.value.findIndex((p) => p.id === edit.value!.id)
   if (i >= 0) ALL.value[i] = { ...edit.value, endAt: noEnd.value ? null : edit.value.endAt }
+  reload()
   notify(`${edit.value.id} 저장했습니다`, 'success')
   edit.value = null
 }
@@ -77,6 +85,7 @@ function stop() {
 
 function search() {
   applied.value = { keyword: keyword.value, status: status.value ?? '' }
+  reload()
 }
 </script>
 
@@ -110,7 +119,9 @@ function search() {
 
     <div class="toolbar"><span>총 <b>{{ rows.length }}</b>건</span><span style="color: var(--ez-text-muted)">행을 클릭하면 편집 패널이 열린다</span></div>
 
-    <TabGrid :columns="columns" :rows="rows" height="440px" @row-click="openEdit" />
+    <QueryState :loading="loading" :error="error" :empty="rows.length === 0" :lines="9" @retry="reload">
+      <TabGrid :columns="columns" :rows="rows" height="440px" @row-click="openEdit" />
+    </QueryState>
 
     <Drawer
       :visible="!!edit" position="right" :style="{ width: '540px' }"
@@ -187,8 +198,8 @@ function search() {
 </template>
 
 <style scoped>
-.ed { display: flex; flex-direction: column; gap: var(--ez-space-4); }
-.ed__state { display: flex; align-items: center; gap: var(--ez-space-2); padding: var(--ez-space-3); background: var(--ez-surface-sunken); border-radius: var(--ez-radius-md); }
+.ed { display: flex; flex-direction: column; gap: var(--ez-gap-inter); font-variant-numeric: tabular-nums; }
+.ed__state { display: flex; align-items: center; gap: var(--ez-gap-intra); padding: var(--ez-gap-inter); background: var(--ez-surface-sunken); border-radius: var(--ez-radius-md); }
 .ed__note { font-size: var(--ez-font-size-xs); color: var(--ez-text-muted); }
 .ed__check { display: inline-flex; align-items: center; gap: var(--ez-space-2); margin-top: var(--ez-space-1); font-size: var(--ez-font-size-xs); cursor: pointer; }
 

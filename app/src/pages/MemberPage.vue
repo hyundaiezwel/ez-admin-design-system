@@ -5,13 +5,15 @@
  * `editable`을 끈 예다. 끄면 범위 선택 모듈이 안 붙고 체크박스 컬럼이 행 헤더 거터로
  * 바뀌는 문제도 같이 사라진다. 편집이 필요 없는 목록은 이쪽이 기본이다.
  */
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Drawer from 'primevue/drawer'
 import { EzBadge } from '@ezwel/ui'
 import TabGrid from '@shared/grid/TabGrid.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery, ERROR_KEYWORD } from '../app/useMockQuery'
 import { makeMembers, GRADES, MEMBER_STATUS, GRADE_TONE, MEMBER_STATUS_TONE, type Member } from '@fixtures/members'
 import { won } from '@fixtures/rng'
 
@@ -22,16 +24,20 @@ const status = ref<string | null>(null)
 const applied = ref({ keyword: '', grade: '', status: '' })
 const detail = ref<Member | null>(null)
 
-const rows = computed(() =>
-  ALL.filter((m) => {
-    const f = applied.value
-    return (
-      (!f.keyword || m.name.includes(f.keyword) || m.id.includes(f.keyword) || m.email.includes(f.keyword)) &&
-      (!f.grade || m.grade === f.grade) &&
-      (!f.status || m.status === f.status)
-    )
-  }),
+const { rows, loading, error, reload } = useMockQuery(
+  () =>
+    ALL.filter((m) => {
+      const f = applied.value
+      return (
+        (!f.keyword || m.name.includes(f.keyword) || m.id.includes(f.keyword) || m.email.includes(f.keyword)) &&
+        (!f.grade || m.grade === f.grade) &&
+        (!f.status || m.status === f.status)
+      )
+    }),
+  { failIf: () => applied.value.keyword.includes(ERROR_KEYWORD) },
 )
+
+onMounted(reload)
 
 const badge = (tone: string, v: string) => `<span class="g-badge g-badge--${tone}">${v}</span>`
 
@@ -52,12 +58,14 @@ const columns = [
 
 function search() {
   applied.value = { keyword: keyword.value, grade: grade.value ?? '', status: status.value ?? '' }
+  reload()
 }
 function reset() {
   keyword.value = ''
   grade.value = null
   status.value = null
   applied.value = { keyword: '', grade: '', status: '' }
+  reload()
 }
 </script>
 
@@ -93,7 +101,9 @@ function reset() {
 
     <div class="toolbar"><span>총 <b>{{ rows.length.toLocaleString('ko-KR') }}</b>명</span></div>
 
-    <TabGrid :columns="columns" :rows="rows" height="480px" @row-click="detail = $event" />
+    <QueryState :loading="loading" :error="error" :empty="rows.length === 0" :lines="9" @retry="reload">
+      <TabGrid :columns="columns" :rows="rows" height="480px" @row-click="detail = $event" />
+    </QueryState>
 
     <!-- Drawer는 boolean만 받는다. 선택 객체를 그대로 물리면 타입이 어긋난다 -->
     <Drawer
@@ -116,7 +126,7 @@ function reset() {
 
 <style scoped>
 .dt { display: flex; flex-direction: column; gap: var(--ez-space-3); margin: 0; }
-.dt > div { display: grid; grid-template-columns: 96px 1fr; gap: var(--ez-space-3); align-items: center; font-size: var(--ez-font-size-sm); }
+.dt > div { display: grid; grid-template-columns: minmax(96px, max-content) 1fr; gap: var(--ez-gap-inter); align-items: center; font-size: var(--ez-font-size-sm); }
 .dt dt { color: var(--ez-text-muted); font-size: var(--ez-font-size-xs); }
 .dt dd { margin: 0; }
 .num { font-variant-numeric: tabular-nums; }

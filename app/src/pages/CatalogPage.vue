@@ -151,15 +151,15 @@ const STEPS = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95]
 </template>
 
 <style scoped>
-.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ez-space-2); }
-.stack { display: flex; flex-direction: column; gap: var(--ez-space-3); }
-.inline { display: inline-flex; align-items: center; gap: var(--ez-space-2); font-size: var(--ez-font-size-sm); cursor: pointer; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ez-gap-intra); }
+.stack { display: flex; flex-direction: column; gap: var(--ez-gap-inter); }
+.inline { display: inline-flex; align-items: center; gap: var(--ez-gap-intra); font-size: var(--ez-font-size-sm); cursor: pointer; }
 
-.ramp { display: flex; align-items: center; gap: var(--ez-space-3); margin-bottom: var(--ez-space-2); }
-.ramp__name { width: 78px; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); font-family: var(--ez-font-family-mono); }
-.ramp__row { display: flex; gap: 2px; flex: 1; }
+.ramp { display: flex; align-items: center; gap: var(--ez-gap-inter); margin-bottom: var(--ez-gap-intra); }
+.ramp__name { width: 9ch; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); font-family: var(--ez-font-family-mono); }
+.ramp__row { display: flex; gap: var(--ez-space-0-5); flex: 1; }
 .sw { flex: 1; text-align: center; }
-.sw__chip { height: 30px; border-radius: var(--ez-radius-sm); }
+.sw__chip { height: var(--ez-size-sm); border-radius: var(--ez-radius-sm); }
 .sw__n { font-size: 9px; color: var(--ez-text-muted); font-family: var(--ez-font-family-mono); }
-.note { margin: var(--ez-space-3) 0 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
+.note { margin: var(--ez-gap-inter) 0 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); max-inline-size: var(--ez-measure); }
 </style>

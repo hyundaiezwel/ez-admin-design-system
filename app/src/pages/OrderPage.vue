@@ -4,13 +4,15 @@
  *
  * 행 수를 바꿔 가며 가상 렌더를 확인하는 자리다. 30만 행에서도 스크롤이 끊기지 않아야 한다.
  */
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import { notify } from '@ezwel/ui'
 import TabGrid from '@shared/grid/TabGrid.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery, ERROR_KEYWORD } from '../app/useMockQuery'
 import { makeOrders, ORDER_STATUS, ORDER_STATUS_TONE, ORDER_CHANNELS } from '@fixtures/orders'
 import { won } from '@fixtures/rng'
 
@@ -21,20 +23,25 @@ const status = ref<string | null>(null)
 const channel = ref<string | null>(null)
 const applied = ref({ keyword: '', status: '', channel: '' })
 const selectedCount = ref(0)
-const loading = ref(false)
 
 const source = computed(() => makeOrders(size.value))
 
-const rows = computed(() =>
-  source.value.filter((o) => {
-    const f = applied.value
-    return (
-      (!f.keyword || o.id.includes(f.keyword) || o.customer.includes(f.keyword) || o.product.includes(f.keyword)) &&
-      (!f.status || o.status === f.status) &&
-      (!f.channel || o.channel === f.channel)
-    )
-  }),
+const { rows, loading, error, reload } = useMockQuery(
+  () =>
+    source.value.filter((o) => {
+      const f = applied.value
+      return (
+        (!f.keyword || o.id.includes(f.keyword) || o.customer.includes(f.keyword) || o.product.includes(f.keyword)) &&
+        (!f.status || o.status === f.status) &&
+        (!f.channel || o.channel === f.channel)
+      )
+    }),
+  // 대용량일수록 지연이 길다 — 로딩 상태가 실제로 보여야 의미가 있다
+  { latency: 350, failIf: () => applied.value.keyword.includes(ERROR_KEYWORD) },
 )
+
+onMounted(reload)
+watch(size, reload)
 
 const sum = computed(() => rows.value.reduce((s, o) => ({ amount: s.amount + o.amount, fee: s.fee + o.fee, settle: s.settle + o.settle }), { amount: 0, fee: 0, settle: 0 }))
 
@@ -57,9 +64,8 @@ const columns = [
 const grid = ref<InstanceType<typeof TabGrid> | null>(null)
 
 function search() {
-  loading.value = true
   applied.value = { keyword: keyword.value, status: status.value ?? '', channel: channel.value ?? '' }
-  setTimeout(() => (loading.value = false), 150)
+  reload()
 }
 </script>
 
@@ -104,7 +110,9 @@ function search() {
       <span style="color: var(--ez-text-muted)">선택 {{ selectedCount }}건</span>
     </div>
 
-    <TabGrid :columns="columns" :rows="rows" editable height="440px" @selection-change="selectedCount = $event" />
+    <QueryState :loading="loading" :error="error" :empty="rows.length === 0" :lines="9" @retry="reload">
+      <TabGrid :columns="columns" :rows="rows" editable height="440px" @selection-change="selectedCount = $event" />
+    </QueryState>
 
     <!-- 합계는 그리드 밖에 둔다. Tabulator의 columnCalcs와 가상 렌더를 같이 쓰면
          스크롤 중 합계가 깜빡이는 문제가 있어 목록과 분리했다 -->
@@ -119,14 +127,14 @@ function search() {
 <style scoped>
 .sum {
   display: flex;
-  gap: var(--ez-space-6);
-  padding: var(--ez-space-3) var(--ez-space-4);
+  gap: var(--ez-gap-region);
+  padding: var(--ez-gap-inter) var(--ez-card-padding);
   background: var(--ez-surface-sunken);
   border: 1px solid var(--ez-border-default);
   border-radius: var(--ez-radius-lg);
   font-size: var(--ez-font-size-xs);
 }
-.sum > div { display: flex; gap: var(--ez-space-2); align-items: baseline; }
+.sum > div { display: flex; gap: var(--ez-gap-intra); align-items: baseline; }
 .sum span { color: var(--ez-text-muted); }
 .sum b { font-variant-numeric: tabular-nums; color: var(--ez-text-strong); }
 .sum--strong { margin-left: auto; }

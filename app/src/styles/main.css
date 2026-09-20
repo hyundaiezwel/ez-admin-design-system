@@ -16,10 +16,10 @@ body {
    카드 패딩·간격·모서리·테두리가 한꺼번에 바뀐다(@ezwel/ui v1.3.0). */
 .pg { display: flex; flex-direction: column; gap: var(--ez-section-gap); }
 
-.pg__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--ez-space-4); }
+.pg__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--ez-gap-region); }
 .pg__title { margin: 0; font-size: var(--ez-font-size-xl); font-weight: var(--ez-font-weight-bold); color: var(--ez-text-strong); }
 .pg__sub { margin: var(--ez-space-1) 0 0; font-size: var(--ez-font-size-xs); color: var(--ez-text-muted); }
-.pg__actions { display: flex; gap: var(--ez-space-2); }
+.pg__actions { display: flex; gap: var(--ez-gap-intra); }
 
 .card {
   padding: var(--ez-card-padding);
@@ -31,25 +31,28 @@ body {
 }
 
 .card__title {
-  margin: 0 0 var(--ez-space-3);
+  margin: 0 0 var(--ez-gap-intra);
   font-size: var(--ez-font-size-md);
   font-weight: var(--ez-font-weight-bold);
   color: var(--ez-text-strong);
 }
 
 /* 조회 영역 */
-.sfb { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--ez-space-4); padding: var(--ez-space-3) var(--ez-space-4); background: var(--ez-surface-default); border: 1px solid var(--ez-border-default); border-radius: var(--ez-radius-lg); }
-.sfb__fields { display: flex; flex-wrap: wrap; gap: var(--ez-space-3); flex: 1; }
-.sfb__actions { display: flex; gap: var(--ez-space-2); }
+.sfb { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--ez-gap-region); padding: var(--ez-gap-inter) var(--ez-card-padding); background: var(--ez-surface-default); border: var(--ez-card-border-width) solid var(--ez-border-default); border-radius: var(--ez-card-radius); box-shadow: var(--ez-card-shadow); }
+.sfb__fields { display: flex; flex-wrap: wrap; gap: var(--ez-gap-inter); flex: 1; }
+.sfb__actions { display: flex; gap: var(--ez-gap-intra); }
 
-.field { display: flex; flex-direction: column; gap: var(--ez-space-1); min-width: 160px; }
+.field { display: flex; flex-direction: column; gap: var(--ez-gap-intra); min-width: 160px; }
 .field__label { font-size: var(--ez-font-size-xs); font-weight: var(--ez-font-weight-medium); color: var(--ez-text-default); }
 .field__req { color: var(--ez-text-danger); margin-left: 2px; }
 .field__help { font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
+
+/* M1 — 읽는 문단은 최대 폭에서 끊는다(원칙 §3) */
+.prose { max-inline-size: var(--ez-measure); }
 .field__err { font-size: var(--ez-font-size-2xs); color: var(--ez-text-danger); }
 
-.toolbar { display: flex; align-items: center; gap: var(--ez-space-4); font-size: var(--ez-font-size-xs); color: var(--ez-text-default); }
-.toolbar__right { margin-left: auto; display: flex; gap: var(--ez-space-2); }
+.toolbar { display: flex; align-items: center; gap: var(--ez-gap-inter); font-size: var(--ez-font-size-xs); color: var(--ez-text-default); }
+.toolbar__right { margin-left: auto; display: flex; gap: var(--ez-gap-intra); }
 
 /* 정확히 2열. auto-fit 이면 넓은 화면에서 4열이 되어 `span 2` 가 절반만 차지한다 */
 /* 위젯 폭이 다 같으면 무엇이 중요한지 안 보인다. 2:1 / 1:2 로 무게를 준다 */
@@ -57,7 +60,7 @@ body {
 .grid12 { display: grid; grid-template-columns: 1fr 2fr; gap: var(--ez-card-gap); }
 
 /* 여유 밀도에서는 제목과 내용 사이도 벌린다 */
-[data-density='comfortable'] .card__title { margin-bottom: var(--ez-space-5); }
+[data-density='comfortable'] .card__title { margin-bottom: var(--ez-gap-block); }
 
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ez-card-gap); }
 .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--ez-card-gap); }

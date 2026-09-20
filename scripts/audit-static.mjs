@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 
@@ -42,18 +42,25 @@ for (const file of files) {
   const margins = (styleBlock.match(/\bmargin(-(top|bottom|left|right))?:\s*(?!0)(?!auto)/g) ?? []).length
   if (margins > 3) add('§3 프리미티브', 'low', `개별 margin ${margins}곳 — Stack/Cluster의 gap으로 대체 가능한가`)
 
-  // §4 primary 하나
+  // §4 primary 하나 — **영역당** 하나다. 페이지머리와 조회영역은 다른 영역이고,
+  // 모달·패널 푸터도 각자 영역이다. 영역을 안 보면 전부 오탐이 난다(2026-09-20 감사에서 겪었다).
   const buttons = [...template.matchAll(/<Button\b[^>]*>/g)].map((m) => m[0])
-  const primary = buttons.filter(
-    (b) => !/severity=|outlined|text\b|link\b/.test(b) || /severity="?danger/.test(b) === false && !/severity=/.test(b),
-  ).filter((b) => !/severity=/.test(b) && !/\btext\b/.test(b) && !/outlined/.test(b))
-  if (primary.length > 1) add('§4 primary 하나', 'high', `주 버튼 ${primary.length}개`)
+  const primary = buttons.filter((b) => !/severity=/.test(b) && !/\btext\b/.test(b) && !/outlined/.test(b))
+  // 컴포넌트 진열이 목적인 화면은 예외다
+  const isCatalog = /Catalog/.test(file)
+  const regionCount = (template.match(/<(Dialog|Drawer)\b/g) ?? []).length
+  const pageLevel = primary.length - regionCount
+  if (!isCatalog && pageLevel > 2) {
+    add('§4 primary 하나', 'high', `영역 밖 주 버튼 ${pageLevel}개 — 영역을 나눴는지 확인`)
+  }
 
-  // §8 ⑦ 상태 넷
-  const hasEmpty = /EzEmptyState|조회 결과가 없습니다|placeholder:\s*'조회/.test(src) || /placeholder/.test(src)
-  const hasError = /error|오류|invalid|field__err/.test(src)
-  const hasLoading = /loading|로딩|busy|saving/.test(src)
-  const missing = [!hasEmpty && '빈', !hasError && '오류', !hasLoading && '로딩'].filter(Boolean)
+  // §8 ⑦ 상태 넷 — **빈 상태는 목록이 있는 화면에만** 요구한다.
+  // 로그인·대시보드에 "결과 없음"을 요구하면 그건 규칙이 틀린 것이다.
+  const hasList = /TabGrid|QueryState/.test(src)
+  const hasEmpty = /QueryState|EzEmptyState|조회 결과가 없습니다/.test(src)
+  const hasError = /QueryState|:error|field__err|role="alert"/.test(src)
+  const hasLoading = /QueryState|loading\b/.test(src)
+  const missing = [hasList && !hasEmpty && '빈', !hasError && '오류', !hasLoading && '로딩'].filter(Boolean)
   if (missing.length) add('§8⑦ 상태 넷', 'high', `미정의: ${missing.join(' · ')}`)
 
   // §5 숫자 정렬
@@ -93,4 +100,48 @@ for (const sev of ['high', 'med', 'low']) {
   if (!bySev[sev].length) continue
   console.log(`\n[${sev}] ${bySev[sev].length}건`)
   bySev[sev].forEach((f) => console.log(`  ${f.file.replace('.vue', '').padEnd(20)} ${f.rule.padEnd(16)} ${f.detail}`))
+}
+
+// ---------------------------------------------------------------------------
+// 예약 클래스 충돌 — 디자인 시스템의 레이아웃 프리미티브 이름을 앱이 다시 정의하면
+// 조용히 망가진다. 2026-09-20에 `.ez-grid`가 그랬다: 앱은 Tabulator 래퍼로 쓰고
+// 디자인 시스템은 `display:grid`로 선언해서, v1.4.0으로 올린 순간 헤더가 표 전체를
+// 먹고 본문 높이가 0이 됐다. **콘솔 오류는 없었다** — 그래서 눈으로만 잡힌다.
+// 예약어 목록은 하드코딩하지 않고 설치된 layout.css에서 읽는다.
+// ---------------------------------------------------------------------------
+const repo = fileURLToPath(new URL('..', import.meta.url))
+
+function reservedClassConflicts() {
+  const layout = join(repo, 'node_modules/@ezwel/ui/dist/layout.css')
+  if (!existsSync(layout)) return null
+  const reserved = new Set(
+    [...readFileSync(layout, 'utf8').matchAll(/^\.(ez-[a-z-]+)\s*\{/gm)].map((m) => m[1]),
+  )
+  const hits = []
+  const walk = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      if (e.name === 'node_modules' || e.name === 'dist') continue
+      const f = join(d, e.name)
+      if (e.isDirectory()) walk(f)
+      else if (/\.(css|vue)$/.test(e.name)) {
+        for (const m of readFileSync(f, 'utf8').matchAll(/^\s*\.(ez-[a-z-]+)(?=[\s,{:])/gm)) {
+          if (reserved.has(m[1])) hits.push(`${f.replace(repo, '')} 가 .${m[1]} 을(를) 다시 정의한다`)
+        }
+      }
+    }
+  }
+  walk(join(repo, 'shared'))
+  walk(join(repo, 'app/src'))
+  return { reserved: reserved.size, hits }
+}
+
+const conflict = reservedClassConflicts()
+if (!conflict) {
+  console.log('\n예약 클래스 검사: @ezwel/ui 미설치 — 건너뜀')
+} else if (conflict.hits.length) {
+  console.log(`\n[critical] 예약 클래스 충돌 ${conflict.hits.length}건 (예약어 ${conflict.reserved}개 대조)`)
+  conflict.hits.forEach((h) => console.log('  ' + h))
+  process.exitCode = 1
+} else {
+  console.log(`\n예약 클래스 검사: 충돌 없음 (예약어 ${conflict.reserved}개 대조)`)
 }

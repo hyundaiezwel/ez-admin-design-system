@@ -8,7 +8,7 @@
  * 순서가 중요하다 — import가 먼저, 우리 규칙이 뒤. */
 @import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 
-.ez-grid {
+.ez-datagrid {
   font-family: var(--ez-font-family);
   font-size: var(--ez-font-size-xs);
   color: var(--ez-text-default);
@@ -18,7 +18,7 @@
   overflow: hidden;
 }
 
-.ez-grid .tabulator-header {
+.ez-datagrid .tabulator-header {
   background: var(--ez-surface-sunken);
   border-bottom: 1px solid var(--ez-border-default);
   color: var(--ez-text-muted);
@@ -26,31 +26,31 @@
 }
 
 /* 특정도를 맞춰야 한다 — `tabulator_simple`이 `.tabulator .tabulator-header .tabulator-col`
-   (0,3,0)로 흰 배경을 박아 둬서 `.ez-grid .tabulator-col`(0,2,0)로는 지고,
+   (0,3,0)로 흰 배경을 박아 둬서 `.ez-datagrid .tabulator-col`(0,2,0)로는 지고,
    다크에서 헤더 셀만 흰 판으로 남았다(대비 1.98:1). */
-.ez-grid .tabulator-header .tabulator-col {
+.ez-datagrid .tabulator-header .tabulator-col {
   background: transparent;
   color: var(--ez-text-muted);
   border-right: 1px solid var(--ez-border-subtle);
 }
 
-.ez-grid .tabulator-col-content {
+.ez-datagrid .tabulator-col-content {
   padding: var(--ez-space-2) var(--ez-space-3);
 }
 
-.ez-grid .tabulator-col-title {
+.ez-datagrid .tabulator-col-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--ez-text-muted);
 }
 
-.ez-grid .tabulator-header .tabulator-col .tabulator-col-sorter {
+.ez-datagrid .tabulator-header .tabulator-col .tabulator-col-sorter {
   color: var(--ez-icon-muted);
 }
 
-.ez-grid .tabulator-header-filter input,
-.ez-grid .tabulator-header-filter select {
+.ez-datagrid .tabulator-header-filter input,
+.ez-datagrid .tabulator-header-filter select {
   width: 100%;
   height: var(--ez-size-sm);
   padding: 0 var(--ez-space-2);
@@ -64,37 +64,37 @@
 /* `tabulator_simple`이 짝수 행과 셀 글자색을 자기 값으로 박아 둔다.
    특정도가 같아 우리 규칙이 뒤에 오는 것만으로는 부족한 자리가 있어 클래스를 함께 건다 —
    안 그러면 다크 테마에서 표만 흰 판으로 남는다. */
-.ez-grid .tabulator-row,
-.ez-grid .tabulator-row.tabulator-row-even,
-.ez-grid .tabulator-row.tabulator-row-odd {
+.ez-datagrid .tabulator-row,
+.ez-datagrid .tabulator-row.tabulator-row-even,
+.ez-datagrid .tabulator-row.tabulator-row-odd {
   background: var(--ez-surface-default);
   color: var(--ez-text-default);
   border-bottom: 1px solid var(--ez-border-subtle);
 }
 
-.ez-grid .tabulator-row:hover {
+.ez-datagrid .tabulator-row:hover {
   background: var(--ez-surface-hover);
 }
 
-.ez-grid .tabulator-row.ez-row-selected {
+.ez-datagrid .tabulator-row.ez-row-selected {
   background: var(--ez-surface-selected);
   box-shadow: inset 3px 0 0 var(--ez-action-primary);
 }
 
-.ez-grid .tabulator-cell {
+.ez-datagrid .tabulator-cell {
   padding: var(--ez-space-2) var(--ez-space-3);
   color: var(--ez-text-default);
   border-right: 1px solid var(--ez-border-subtle);
 }
 
 /* 행 높이를 우리 규격(md 34px)에 맞춘다. 기본 테마는 여백이 더 넉넉하다 */
-.ez-grid .tabulator-row .tabulator-cell {
+.ez-datagrid .tabulator-row .tabulator-cell {
   height: auto;
   min-height: 0;
   line-height: var(--ez-line-height-tight);
 }
 
-.ez-grid .tabulator-cell.tabulator-editing input {
+.ez-datagrid .tabulator-cell.tabulator-editing input {
   background: var(--ez-field-bg);
   color: var(--ez-text-default);
   border: 1px solid var(--ez-border-focus);
@@ -103,30 +103,30 @@
 
 /* `selectableRange`를 켜면 SelectRange 모듈이 첫 컬럼(우리 체크박스 컬럼)을
    '행 헤더' 거터로 바꾸고 자기 회색(#d6d6d6)을 칠한다. 토큰으로 되돌린다. */
-.ez-grid .tabulator-cell.tabulator-range-row-header,
-.ez-grid .tabulator-col.tabulator-range-row-header {
+.ez-datagrid .tabulator-cell.tabulator-range-row-header,
+.ez-datagrid .tabulator-col.tabulator-range-row-header {
   background: var(--ez-surface-sunken);
   color: var(--ez-text-muted);
   border-right: 1px solid var(--ez-border-default);
 }
 
 /* 범위 선택 표시 — 기본 테마 없이도 선택 범위가 보여야 한다 */
-.ez-grid .tabulator-cell.tabulator-range-selected {
+.ez-datagrid .tabulator-cell.tabulator-range-selected {
   background: var(--ez-surface-selected);
 }
-.ez-grid .tabulator-cell.tabulator-range-highlight {
+.ez-datagrid .tabulator-cell.tabulator-range-highlight {
   outline: 2px solid var(--ez-action-primary);
   outline-offset: -2px;
 }
 
-.ez-grid .tabulator-placeholder {
+.ez-datagrid .tabulator-placeholder {
   color: var(--ez-text-muted);
   padding: var(--ez-space-10);
 }
 
 /* 상태 뱃지 — 그리드 셀 안에서는 Vue 컴포넌트를 못 쓴다(formatter가 HTML 문자열이다).
    EzBadge와 같은 토큰을 쓰므로 두 곳의 색이 갈라지지 않는다. */
-.ez-grid .g-badge {
+.ez-datagrid .g-badge {
   display: inline-flex;
   align-items: center;
   padding: 2px var(--ez-space-2);

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 /** 공통코드 — 마스터·디테일 2단 연동. 좌측을 고르면 우측이 따라온다. */
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import { EzBadge } from '@ezwel/ui'
 import TabGrid from '@shared/grid/TabGrid.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery, ERROR_KEYWORD } from '../app/useMockQuery'
 
 interface Group { code: string; name: string; count: number; use: 'Y' | 'N' }
 interface Detail { code: string; name: string; tone: string; sort: number; use: 'Y' | 'N' }
@@ -37,7 +39,12 @@ const DETAILS: Record<string, Detail[]> = {
 const selected = ref<Group>(GROUPS[0])
 const keyword = ref('')
 
-const groups = computed(() => GROUPS.filter((g) => !keyword.value || g.name.includes(keyword.value) || g.code.includes(keyword.value)))
+const { rows: groups, loading, error, reload } = useMockQuery(
+  () => GROUPS.filter((g) => !keyword.value || g.name.includes(keyword.value) || g.code.includes(keyword.value)),
+  { latency: 300, failIf: () => keyword.value.includes(ERROR_KEYWORD) },
+)
+
+onMounted(reload)
 const details = computed(() => DETAILS[selected.value.code] ?? [])
 
 const groupColumns = [
@@ -63,14 +70,16 @@ const groupColumns = [
       <section class="card">
         <h2 class="card__title">코드 그룹</h2>
         <div class="field" style="margin-bottom: var(--ez-space-3)">
-          <InputText v-model="keyword" placeholder="그룹명 또는 코드" fluid aria-label="코드 그룹 검색" />
+          <InputText v-model="keyword" placeholder="그룹명 또는 코드" fluid aria-label="코드 그룹 검색" @keyup.enter="reload" />
         </div>
-        <TabGrid
-          :columns="groupColumns"
-          :rows="groups"
-          height="420px"
-          @row-click="(r: any) => (selected = r)"
-        />
+        <QueryState :loading="loading" :error="error" :empty="groups.length === 0" :lines="7" @retry="reload">
+          <TabGrid
+            :columns="groupColumns"
+            :rows="groups"
+            height="420px"
+            @row-click="(r: any) => (selected = r)"
+          />
+        </QueryState>
       </section>
 
       <section class="card">
@@ -101,12 +110,12 @@ const groupColumns = [
 </template>
 
 <style scoped>
-.cols { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: var(--ez-space-4); }
+.cols { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: var(--ez-gap-region); }
 .code { font-family: var(--ez-font-family-mono); font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
 .dt { width: 100%; border-collapse: collapse; font-size: var(--ez-font-size-xs); }
-.dt th, .dt td { padding: var(--ez-space-2) var(--ez-space-3); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
+.dt th, .dt td { padding: var(--ez-gap-intra) var(--ez-gap-inter); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
 .dt th { color: var(--ez-text-muted); font-weight: var(--ez-font-weight-medium); }
 .num { text-align: right; font-variant-numeric: tabular-nums; }
 .empty { padding: var(--ez-space-10); text-align: center; color: var(--ez-text-muted); font-size: var(--ez-font-size-sm); }
-.note { margin: var(--ez-space-4) 0 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
+.note { margin: var(--ez-gap-inter) 0 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); max-inline-size: var(--ez-measure); }
 </style>

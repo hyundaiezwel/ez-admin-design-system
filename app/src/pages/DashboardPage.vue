@@ -1,10 +1,12 @@
 <script setup lang="ts">
 /** 대시보드 — KPI · 차트 3종 · 최근 문의. 드릴다운은 해당 목록 화면으로 보낸다. */
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import { EzBadge } from '@ezwel/ui'
 import EzChart from '../app/EzChart.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery } from '../app/useMockQuery'
 import { makeInquiries, STATUS_TONE } from '@fixtures/inquiries'
 import { makeOrders } from '@fixtures/orders'
 import { won } from '@fixtures/rng'
@@ -12,6 +14,10 @@ import { won } from '@fixtures/rng'
 const router = useRouter()
 const inquiries = makeInquiries(320)
 const orders = makeOrders(500)
+
+/** 대시보드도 넷을 통과한다 — 위젯이 비동기인데 로딩을 안 그리면 첫 화면이 빈 판이 된다 */
+const { loading, error, reload } = useMockQuery(() => [1], { latency: 500 })
+onMounted(reload)
 
 const kpis = computed(() => [
   { label: '오늘 주문', value: won(orders.length), unit: '건', delta: '+12.4%', up: true },
@@ -77,6 +83,7 @@ const recent = computed(() => inquiries.slice(0, 6))
       </div>
     </header>
 
+    <QueryState :loading="loading" :error="error" :lines="4" @retry="reload">
     <div class="grid4">
       <div v-for="k in kpis" :key="k.label" class="kpi">
         <p class="kpi__label">{{ k.label }}</p>
@@ -89,6 +96,7 @@ const recent = computed(() => inquiries.slice(0, 6))
         </p>
       </div>
     </div>
+    </QueryState>
 
     <!-- 폭을 2:1 로 나눠 무게를 준다. 다 같은 폭이면 무엇이 중요한지 안 보인다 -->
     <div class="grid21">
@@ -159,13 +167,14 @@ const recent = computed(() => inquiries.slice(0, 6))
 .kpi__delta--up { color: var(--ez-text-success); }
 .kpi__delta--down { color: var(--ez-text-danger); }
 
-.card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--ez-space-3); }
+.card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--ez-gap-intra); }
 
 .mini { width: 100%; border-collapse: collapse; font-size: var(--ez-font-size-xs); table-layout: fixed; }
-.mini th, .mini td { padding: var(--ez-space-3) var(--ez-space-2); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
+.mini th, .mini td { padding: var(--ez-gap-intra) var(--ez-gap-intra); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }
 .mini th { color: var(--ez-text-muted); font-weight: var(--ez-font-weight-medium); }
 .mini tbody tr:last-child td { border-bottom: none; }
-.mini__id { width: 110px; font-variant-numeric: tabular-nums; }
-.mini th:nth-child(3), .mini td:nth-child(3) { width: 90px; }
-.mini th:nth-child(4), .mini td:nth-child(4) { width: 96px; }
+/* 열 너비는 내용이 정한다 — 고정 px 은 글자 확대에서 잘린다 */
+.mini__id { width: 9ch; font-variant-numeric: tabular-nums; }
+.mini th:nth-child(3), .mini td:nth-child(3) { width: 7ch; }
+.mini th:nth-child(4), .mini td:nth-child(4) { width: 8ch; }
 </style>

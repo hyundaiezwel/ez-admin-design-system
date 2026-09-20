@@ -176,8 +176,8 @@ onBeforeRouteLeave((_to, _from, next) => {
 </template>
 
 <style scoped>
-.stack { display: flex; flex-direction: column; gap: var(--ez-space-4); }
+.stack { display: flex; flex-direction: column; gap: var(--ez-gap-inter); }
 .rad { border: none; margin: 0; padding: 0; }
-.rad__item { display: inline-flex; align-items: center; gap: var(--ez-space-2); margin-right: var(--ez-space-4); font-size: var(--ez-font-size-sm); cursor: pointer; }
-.tog { display: inline-flex; align-items: center; gap: var(--ez-space-2); font-size: var(--ez-font-size-sm); cursor: pointer; }
+.rad__item { display: inline-flex; align-items: center; gap: var(--ez-gap-intra); margin-right: var(--ez-gap-region); font-size: var(--ez-font-size-sm); cursor: pointer; }
+.tog { display: inline-flex; align-items: center; gap: var(--ez-gap-intra); font-size: var(--ez-font-size-sm); cursor: pointer; }
 </style>

@@ -5,7 +5,7 @@
  * 스파이크에서 쓰던 화면을 셸 위로 옮긴 것이다. 그리드는 PoC를 통째로 옮기지 않고
  * `TabGrid`에 컬럼 원장과 데이터만 넘긴다.
  */
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -15,6 +15,8 @@ import Drawer from 'primevue/drawer'
 import Dialog from 'primevue/dialog'
 import { EzBadge, notify } from '@ezwel/ui'
 import TabGrid from '@shared/grid/TabGrid.vue'
+import QueryState from '../app/QueryState.vue'
+import { useMockQuery, ERROR_KEYWORD } from '../app/useMockQuery'
 import { INQUIRY_COLUMNS, INQUIRY_PASTE_RULES } from '@shared/grid/inquiryColumns'
 import { makeInquiries, CHANNELS, STATUSES, ASSIGNEES, STATUS_TONE, type Inquiry } from '@fixtures/inquiries'
 
@@ -34,17 +36,26 @@ const bulkOpen = ref(false)
 const reply = ref('')
 const current = ref<Inquiry | null>(null)
 
-const rows = computed(() =>
-  ALL.filter((r) => {
-    const f = applied.value
-    return (
-      (!f.keyword || r.title.includes(f.keyword) || r.id.includes(f.keyword)) &&
-      (!f.channel || r.channel === f.channel) &&
-      (!f.status || r.status === f.status) &&
-      (!f.assignee || r.assignee === f.assignee)
-    )
-  }),
+/**
+ * 목록은 네 상태를 전부 통과한다(원칙 §8⑦) — 정상 · 빈 · 오류 · 로딩.
+ * 오류를 보려면 검색어에 `오류`를 넣는다. 데모에서 오류 화면을 띄울 방법이 없으면
+ * 그 상태는 만든 것이 아니다.
+ */
+const { rows, loading, error, reload } = useMockQuery(
+  () =>
+    ALL.filter((r) => {
+      const f = applied.value
+      return (
+        (!f.keyword || r.title.includes(f.keyword) || r.id.includes(f.keyword)) &&
+        (!f.channel || r.channel === f.channel) &&
+        (!f.status || r.status === f.status) &&
+        (!f.assignee || r.assignee === f.assignee)
+      )
+    }),
+  { failIf: () => applied.value.keyword.includes(ERROR_KEYWORD) },
 )
+
+onMounted(reload)
 
 function searchAssignee(e: { query: string }) {
   assigneeItems.value = ASSIGNEES.filter((n) => !e.query || n.includes(e.query))
@@ -54,6 +65,7 @@ const grid = ref<InstanceType<typeof TabGrid> | null>(null)
 
 function search() {
   applied.value = { keyword: keyword.value, channel: channel.value ?? '', status: status.value ?? '', assignee: assignee.value }
+  reload()
 }
 function reset() {
   keyword.value = ''
@@ -61,6 +73,7 @@ function reset() {
   status.value = null
   assignee.value = ''
   applied.value = { keyword: '', channel: '', status: '', assignee: '' }
+  reload()
 }
 function openReply(row: Inquiry) {
   current.value = row
@@ -122,20 +135,26 @@ function saveReply() {
 
     <p v-if="pasteMsg" class="paste">{{ pasteMsg }}</p>
 
-    <TabGrid
-      ref="grid"
-      :columns="INQUIRY_COLUMNS"
-      :rows="rows"
-      :paste-rules="INQUIRY_PASTE_RULES"
-      editable
-      height="460px"
-      @selection-change="selectedCount = $event"
-      @paste-report="pasteMsg = $event.summary"
-    />
+    <QueryState :loading="loading" :error="error" :empty="rows.length === 0" :lines="9" @retry="reload">
+      <TabGrid
+        ref="grid"
+        :columns="INQUIRY_COLUMNS"
+        :rows="rows"
+        :paste-rules="INQUIRY_PASTE_RULES"
+        editable
+        height="460px"
+        @selection-change="selectedCount = $event"
+        @paste-report="pasteMsg = $event.summary"
+      />
+    </QueryState>
 
-    <p class="hint">
+    <p class="hint prose">
       셀을 드래그해 범위를 잡고 <kbd>⌘C</kbd>/<kbd>⌘V</kbd>로 복사·붙여넣기 할 수 있다.
       규칙에 맞지 않는 값은 <b>전량 거부</b>된다 — 일부만 들어가면 어디까지 반영됐는지 알 수 없다.
+    </p>
+    <p class="hint prose">
+      상태 확인 — 검색어에 <b>오류</b>를 넣으면 실패 화면이, 없는 값을 넣으면 빈 화면이 나온다.
+      조회할 때마다 로딩 스켈레톤을 지난다.
     </p>
 
     <!-- 답변 패널 — 목록 맥락을 유지해야 해서 모달이 아니라 사이드 패널이다 -->
@@ -175,13 +194,13 @@ function saveReply() {
 .paste { margin: 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
 .hint { margin: 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
 kbd {
-  padding: 1px 5px; border: 1px solid var(--ez-border-default); border-radius: var(--ez-radius-sm);
-  background: var(--ez-surface-sunken); font-family: var(--ez-font-family-mono); font-size: 10px;
+  padding: 1px var(--ez-space-1); border: 1px solid var(--ez-border-default); border-radius: var(--ez-radius-sm);
+  background: var(--ez-surface-sunken); font-family: var(--ez-font-family-mono); font-size: var(--ez-font-size-xs);
 }
-.rp { display: flex; flex-direction: column; gap: var(--ez-space-4); }
-.rp__meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ez-space-2); margin: 0; }
-.rp__meta > div { display: flex; gap: var(--ez-space-2); font-size: var(--ez-font-size-xs); }
-.rp__meta dt { color: var(--ez-text-muted); min-width: 44px; }
+.rp { display: flex; flex-direction: column; gap: var(--ez-gap-inter); }
+.rp__meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ez-gap-intra); margin: 0; }
+.rp__meta > div { display: flex; gap: var(--ez-gap-intra); font-size: var(--ez-font-size-xs); }
+.rp__meta dt { color: var(--ez-text-muted); min-width: 5ch; }
 .rp__meta dd { margin: 0; }
-.rp__q { margin: 0; padding: var(--ez-space-3); background: var(--ez-surface-sunken); border-radius: var(--ez-radius-md); font-size: var(--ez-font-size-sm); }
+.rp__q { margin: 0; padding: var(--ez-gap-inter); background: var(--ez-surface-sunken); border-radius: var(--ez-radius-md); font-size: var(--ez-font-size-sm); }
 </style>

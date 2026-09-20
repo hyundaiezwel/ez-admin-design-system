@@ -70,8 +70,9 @@ function submit() {
 .login {
   display: flex;
   flex-direction: column;
-  gap: var(--ez-space-4);
-  width: 360px;
+  gap: var(--ez-gap-inter);
+  /* 폼 한 칸 폭 — 글자가 커지면 같이 넓어진다 */
+  width: 34ch;
   max-width: 100%;
   padding: var(--ez-space-8);
   background: var(--ez-surface-default);
@@ -79,14 +80,14 @@ function submit() {
   border-radius: var(--ez-radius-lg);
   box-shadow: var(--ez-shadow-overlay);
 }
-.login__brand { display: flex; align-items: center; gap: var(--ez-space-3); }
+.login__brand { display: flex; align-items: center; gap: var(--ez-gap-inter); }
 .login__mark {
-  display: grid; place-items: center; width: 40px; height: 40px;
+  display: grid; place-items: center; width: var(--ez-size-lg); height: var(--ez-size-lg);
   border-radius: var(--ez-radius-md); background: var(--ez-brand);
-  color: #fff; font-weight: var(--ez-font-weight-bold);
+  color: var(--ez-text-inverse); font-weight: var(--ez-font-weight-bold);
 }
 .login__title { margin: 0; font-size: var(--ez-font-size-xl); color: var(--ez-text-strong); }
 .login__sub { margin: 2px 0 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); }
-.login__keep { display: flex; align-items: center; gap: var(--ez-space-2); font-size: var(--ez-font-size-xs); cursor: pointer; }
+.login__keep { display: flex; align-items: center; gap: var(--ez-gap-intra); font-size: var(--ez-font-size-xs); cursor: pointer; }
 .login__note { margin: 0; font-size: var(--ez-font-size-2xs); color: var(--ez-text-muted); text-align: center; }
 </style>
