@@ -45,7 +45,7 @@ const active = computed(() => tabs.active)
         @keydown.enter="router.push(t.path)"
         @keydown.space.prevent="router.push(t.path)"
       >
-        <span class="tb__label">{{ t.title }}</span>
+        <span class="tb__label" :title="t.title">{{ t.title }}</span>
         <button
           v-if="!t.fixed"
           class="tb__close"
@@ -66,6 +66,8 @@ const active = computed(() => tabs.active)
 
 <style scoped>
 .tb {
+  --tab-w: 180px;
+
   flex: none;
   display: flex;
   align-items: stretch;
@@ -76,10 +78,16 @@ const active = computed(() => tabs.active)
   border-bottom: 1px solid var(--ez-border-default);
 }
 
-.tb__scroll { flex: 1; display: flex; align-items: stretch; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.tb__scroll { flex: 1; min-width: 0; display: flex; align-items: stretch; gap: var(--ez-space-0-5); overflow-x: auto; scrollbar-width: none; }
 .tb__scroll::-webkit-scrollbar { display: none; }
 
+/* 폭을 내용에 맞추면 탭을 열 때마다 이미 열려 있던 탭이 움직인다 — 같은 탭이 같은
+   자리에 있어야 손이 기억한다. 180px은 2depth 최장 라벨("프로모션 등록·관리" 12자,
+   12px에서 약 144px) + 닫기 18 + 좌우 여백 18이 들어가는 여유값이다.
+   라벨이 짧아도 줄이지 않는다 — 고정이라는 것이 규칙의 전부다. */
 .tb__item {
+  flex: none;
+  width: var(--tab-w);
   display: flex;
   align-items: center;
   gap: var(--ez-space-1);
@@ -89,9 +97,10 @@ const active = computed(() => tabs.active)
   border-radius: var(--ez-radius-sm) var(--ez-radius-sm) 0 0;
   color: var(--ez-text-muted);
   font-size: var(--ez-font-size-xs);
-  white-space: nowrap;
   cursor: pointer;
 }
+
+.tb__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .tb__item:hover { background: var(--ez-surface-hover); }
 
@@ -105,6 +114,7 @@ const active = computed(() => tabs.active)
 }
 
 .tb__close {
+  flex: none;
   display: grid;
   place-items: center;
   width: 18px;

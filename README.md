@@ -4,6 +4,7 @@
 실제로 물리는지 확인하는 것이 목적이다.
 
 - 페이지 구성안 — [`docs/pages.md`](docs/pages.md)
+- **셸 규칙(사이드바·탭)** — [`docs/navigation.md`](docs/navigation.md)
 - **UI 라이브러리 실측 보고** — [`docs/spike-report.md`](docs/spike-report.md)
 
 ## 지금 상태

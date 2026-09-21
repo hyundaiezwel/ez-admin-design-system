@@ -10,6 +10,8 @@ export interface MenuItem {
   to?: string
   icon?: string
   children?: MenuItem[]
+  /** 처리 대기 건수. 행 오른쪽에 숫자로 단다 — 점만 찍으면 "지금 봐야 하나"가 전달되지 않는다 */
+  count?: number
 }
 
 export const MENU: MenuItem[] = [
@@ -19,7 +21,7 @@ export const MENU: MenuItem[] = [
     label: '고객 지원',
     icon: 'chat',
     children: [
-      { id: 'inquiries', label: '문의 답변 관리', to: '/cs/inquiries' },
+      { id: 'inquiries', label: '문의 답변 관리', to: '/cs/inquiries', count: 12 },
       { id: 'members', label: '회원 관리', to: '/cs/members' },
     ],
   },
@@ -44,6 +46,20 @@ export const MENU: MenuItem[] = [
     ],
   },
 ]
+
+/**
+ * 하단 고정 구역. 주 메뉴와 성격이 달라서 자리도 다르다 —
+ * "어디로 가나"가 아니라 "시스템에 관한 것"이다. 메뉴가 길어져도 바닥에 붙어 있다.
+ */
+export const MENU_FOOT: MenuItem[] = [
+  { id: 'help', label: '도움말', to: '/system/catalog', icon: 'info' },
+  { id: 'prefs', label: '환경설정', to: '/system/codes', icon: 'cog' },
+]
+
+/** 그룹이 품은 하위 건수의 합. 접힌 그룹도 안에 쌓인 것을 알려야 한다 */
+export function groupCount(item: MenuItem): number {
+  return (item.children ?? []).reduce((n, c) => n + (c.count ?? 0), 0) + (item.count ?? 0)
+}
 
 /** 경로 → [1depth, 2depth] 라벨. 브레드크럼과 탭 제목이 같은 원천을 본다 */
 export function trail(path: string): { top: MenuItem; leaf?: MenuItem } | null {
