@@ -114,7 +114,7 @@ const recent = computed(() => inquiries.slice(0, 6))
     <div class="grid12">
       <section class="card">
         <h2 class="card__title">문의 분류별 건수</h2>
-        <EzChart :option="byCategory" height="260px" :decal="false" />
+        <EzChart :option="byCategory" height="260px" />
       </section>
 
       <section class="card">

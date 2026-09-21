@@ -2,13 +2,12 @@
 /**
  * 통계 — 차트 전 종류 + 표·차트 병치.
  *
- * `aria.decal` 토글이 이 화면의 핵심이다. 켜면 계열마다 패턴이 입혀져 색 없이도 구분된다.
- * 접근성 문서의 "색에만 기대지 않기"가 차트에서 늘 깨지는데, ECharts는 이걸 기본 제공한다.
+ * 패턴(`aria.decal`)은 걷어냈다 — 톤을 흐린다는 판단이다. 계열 구분을 색 하나가 지므로
+ * **범례를 빼면 안 된다**. 여기가 계열이 가장 많은 화면이라 그 판단의 영향이 제일 크게 보인다.
  */
 import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
-import ToggleSwitch from 'primevue/toggleswitch'
 import EzChart from '../app/EzChart.vue'
 import QueryState from '../app/QueryState.vue'
 import { useMockQuery } from '../app/useMockQuery'
@@ -17,7 +16,6 @@ import { won } from '@fixtures/rng'
 
 const RANGES = ['7일', '14일', '30일', '90일']
 const range = ref('30일')
-const decal = ref(true)
 
 const days = computed(() => {
   const n = Number(range.value.replace('일', ''))
@@ -98,34 +96,27 @@ const table = computed(() =>
       </div>
     </header>
 
-    <div class="card decal">
-      <ToggleSwitch v-model="decal" input-id="decal" />
-      <label for="decal" class="decal__label">
-        <b>색 외 단서(패턴) 표시</b>
-        <span>계열마다 다른 패턴이 입혀진다. 적록색약 사용자도 계열을 구분할 수 있다.</span>
-      </label>
-    </div>
 
     <QueryState :loading="loading" :error="error" :lines="8" @retry="reload">
     <div class="grid2">
       <section class="card" style="grid-column: span 2">
         <h2 class="card__title">채널별 주문 추이 (누적 막대)</h2>
-        <EzChart :option="stacked" :decal="decal" height="300px" />
+        <EzChart :option="stacked" height="300px" />
       </section>
 
       <section class="card" style="grid-column: span 2">
         <h2 class="card__title">매출·건수 (콤보)</h2>
-        <EzChart :option="combo" :decal="decal" height="300px" />
+        <EzChart :option="combo" height="300px" />
       </section>
 
       <section class="card">
         <h2 class="card__title">분류 구성 (도넛)</h2>
-        <EzChart :option="donut" :decal="decal" height="260px" />
+        <EzChart :option="donut" height="260px" />
       </section>
 
       <section class="card">
         <h2 class="card__title">요일·시간대 주문 밀도 (히트맵)</h2>
-        <EzChart :option="heat" :decal="false" height="260px" />
+        <EzChart :option="heat" height="260px" />
       </section>
     </div>
     </QueryState>
@@ -159,9 +150,6 @@ const table = computed(() =>
 </template>
 
 <style scoped>
-.decal { display: flex; align-items: flex-start; gap: var(--ez-gap-inter); }
-.decal__label { display: flex; flex-direction: column; gap: var(--ez-space-0-5); font-size: var(--ez-font-size-xs); cursor: pointer; max-inline-size: var(--ez-measure); }
-.decal__label span { color: var(--ez-text-muted); }
 
 .st { width: 100%; border-collapse: collapse; font-size: var(--ez-font-size-xs); }
 .st th, .st td { padding: var(--ez-gap-intra) var(--ez-gap-inter); text-align: left; border-bottom: 1px solid var(--ez-border-subtle); }

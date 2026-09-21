@@ -6,8 +6,9 @@
  * 색을 적어 넣으면 토큰 체계 밖으로 새고, 테마를 바꿔도 차트만 라이트로 남는다.
  * 여기서 `getComputedStyle`로 토큰을 읽어 옵션에 주입하고, 테마가 바뀌면 다시 읽는다.
  *
- * `aria.decal`을 켜 두는 것이 이 래퍼의 두 번째 이유다 — 계열마다 패턴이 입혀져
- * 색 없이도 구분된다(접근성 문서의 "색에만 기대지 않기"가 차트에서 늘 깨지는 지점).
+ * **패턴(`aria.decal`)은 쓰지 않는다.** 톤을 흐린다는 판단이다. 그래서 계열 구분을
+ * 색 하나가 지고, 적록 색각이상에서 여유가 없다(ΔE 10.6) — 범례·직접 라벨·툴팁이
+ * 그 몫을 져야 한다. 계열이 셋 이상인 화면은 범례를 빼면 안 된다.
  */
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import VChart from 'vue-echarts'
@@ -16,13 +17,13 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart, LineChart, PieChart, HeatmapChart } from 'echarts/charts'
 import {
   GridComponent, TooltipComponent, LegendComponent, TitleComponent,
-  DatasetComponent, AriaComponent, VisualMapComponent,
+  DatasetComponent, VisualMapComponent,
 } from 'echarts/components'
 
 use([
   CanvasRenderer, BarChart, LineChart, PieChart, HeatmapChart,
   GridComponent, TooltipComponent, LegendComponent, TitleComponent,
-  DatasetComponent, AriaComponent, VisualMapComponent,
+  DatasetComponent, VisualMapComponent,
 ])
 
 const props = withDefaults(
@@ -31,9 +32,8 @@ const props = withDefaults(
     option: Record<string, any>
     height?: string
     /** 색 외 단서(패턴). 계열이 2개 이상이면 켜는 것이 기본이다 */
-    decal?: boolean
   }>(),
-  { height: '260px', decal: true },
+  { height: '260px' },
 )
 
 /** 테마가 바뀌면 값을 다시 읽어야 한다. 카운터를 올려 computed를 무효화한다 */
@@ -100,8 +100,6 @@ const merged = computed(() => {
     color: palette,
     backgroundColor: 'transparent',
     textStyle: { fontFamily: token('--ez-font-family'), color: text },
-    // 기본은 꺼져 있다. 켜야 패턴이 입혀진다
-    aria: { enabled: props.decal, decal: { show: props.decal } },
     tooltip: {
       backgroundColor: surface,
       borderColor: token('--ez-border-default'),
