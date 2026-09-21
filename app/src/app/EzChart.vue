@@ -48,6 +48,25 @@ onUnmounted(() => observer?.disconnect())
 
 const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
+/**
+ * 면으로 그리는 계열(파이·누적 막대)에 **배경색 획**을 준다.
+ *
+ * 채움 색이 배경과 3:1일 필요는 없다 — WCAG 1.4.11은 경계가 식별되면 된다. 그 경계를
+ * 획이 맡는다. 획이 없으면 인접 조각끼리 붙어 보이고, 그걸 막으려고 채움 색을 서로
+ * 멀리 벌리면 팔레트가 알록달록해진다.
+ *
+ * 선 차트에는 주지 않는다 — 거기선 선 자체가 정보라 색이 캔버스와 3:1이어야 한다.
+ * 화면이 직접 준 `itemStyle`은 덮지 않는다.
+ */
+function withSeparators(series: any, surface: string) {
+  if (!series) return undefined
+  const seal = (s: any) =>
+    s && (s.type === 'pie' || s.type === 'bar')
+      ? { ...s, itemStyle: { borderColor: surface, borderWidth: 2, ...(s.itemStyle ?? {}) } }
+      : s
+  return Array.isArray(series) ? series.map(seal) : seal(series)
+}
+
 const merged = computed(() => {
   void themeTick.value
   const text = token('--ez-text-default')
@@ -92,6 +111,7 @@ const merged = computed(() => {
     legend: { textStyle: { color: muted, fontSize: 11 }, icon: 'roundRect', ...(props.option.legend ?? {}) },
     grid: { left: 48, right: 16, top: 28, bottom: 28, ...(props.option.grid ?? {}) },
     ...props.option,
+    series: withSeparators(props.option.series, surface),
     xAxis: props.option.xAxis ? { ...axis, ...props.option.xAxis } : undefined,
     yAxis: props.option.yAxis ? { ...axis, ...props.option.yAxis } : undefined,
   }
